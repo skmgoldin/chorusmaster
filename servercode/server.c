@@ -6,6 +6,12 @@
 #include <string.h>
 
 int main(int argc, char **argv) {
+
+  if(*(argv + 1) == NULL) {
+    printf("%s\n", "Run again with a port number, please.");
+    exit(1);
+  }
+
   int status;
   struct addrinfo hints;
   struct addrinfo *servinfo;
@@ -25,4 +31,5 @@ int main(int argc, char **argv) {
     //Wait for a client to connect
     //Send to login handler
   }
+
 }
