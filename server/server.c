@@ -7,7 +7,6 @@ int main(int argc, char **argv) {
   struct addrinfo hints;
   struct addrinfo *servinfo;
 
-  while(1) {
   memset(&hints, 0, sizeof hints); 
   hints.ai_family = AF_UNSPEC;     
   hints.ai_socktype = SOCK_STREAM; 
@@ -17,7 +16,10 @@ int main(int argc, char **argv) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
   }
-  //Wait for a client to connect
-  //Send to login handler
+ 
+  while(1) {
+
+    //Wait for a client to connect
+    //Send to login handler
   }
 }
