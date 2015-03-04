@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "servertools.h"
+#include <stdio.h>
 
 int main(int argc, char **argv) {
 
