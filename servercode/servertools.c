@@ -52,3 +52,13 @@ int getsock(int domain, int type, int protocol) {
 
   return sock;
 }
+
+int freeport(int servsock) {
+
+  int yes = 1;
+  if(setsockopt(servsock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) != 0) {
+    die("Failed to free requested port");
+  }
+
+  return 1;
+}
