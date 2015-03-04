@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include "servertools.h"
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#define BACKLOG 10
 
 int main(int argc, char **argv) {
 
@@ -14,9 +18,21 @@ int main(int argc, char **argv) {
   int sock = makeserver(port); 
 
   while(1) {
-
-    //Wait for a client to connect
-    //Send to login handler
+    int clntsock = getconnection(sock);
   }
 
+  return 0;
+}
+
+int getconnection(int sock) {
+
+  int backlog = BACKLOG;
+  struct sockaddr_storage *clntaddr;
+  socklen_t *clntaddrsize;
+  *clntaddrsize = sizeof(struct sockaddr_storage);
+
+  listen(sock, backlog);
+  int clntsock = accept(sock, (struct sockaddr *)clntaddr, clntaddrsize);
+
+  return clntsock;
 }
