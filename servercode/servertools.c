@@ -14,7 +14,8 @@ int makeserver(char *port) {
   hints = gethints(AF_UNSPEC, SOCK_STREAM, AI_PASSIVE, hints);
 
   if(getaddrinfo(NULL, port, hints, &servinfo) != 0) {
-    die("getaddrinfo failed");
+    fprintf(stderr, "%s\n", "getaddrinfo failed.");
+    exit(1);
   }
 
   int sock = getsock(servinfo->ai_family, servinfo->ai_socktype,
@@ -22,7 +23,8 @@ int makeserver(char *port) {
 
   freeport(sock);
   if(bind(sock, servinfo->ai_addr, servinfo->ai_addrlen) != 0) {
-    die("Bind failed");
+    fprintf(stderr, "%s\n", "Bind failed.");
+    exit(1);
   }
 
   freeaddrinfo(hints);
@@ -47,7 +49,8 @@ int getsock(int domain, int type, int protocol) {
   int sock;
 
   if((sock = socket(domain, type, protocol)) < 0) {
-    die("socket() failed");
+    fprintf(stderr, "%s\n", "socket() failed.");
+    exit(1);
   }
 
   return sock;
@@ -57,7 +60,8 @@ int freeport(int servsock) {
 
   int yes = 1;
   if(setsockopt(servsock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) != 0) {
-    die("Failed to free requested port");
+    fprintf(stderr, "%s\n", "Failed to free requested port.");
+    exit(1);
   }
 
   return 1;
