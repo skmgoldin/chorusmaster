@@ -8,6 +8,8 @@ struct addrinfo * gethints(int fam, int socktype, int flags,
 
 int getsock(int domain, int type, int protocol);
 
+int getconnection(int sock);
+
 int freeport(int servsock);
 
 #endif

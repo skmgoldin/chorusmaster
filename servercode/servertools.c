@@ -6,6 +6,8 @@
 #include <string.h>
 #include "servertools.h"
 
+#define BACKLOG 10
+
 int makeserver(char *port) {
 
   struct addrinfo *servinfo = NULL;
@@ -54,6 +56,18 @@ int getsock(int domain, int type, int protocol) {
   }
 
   return sock;
+}
+
+int getconnection(int sock) {
+
+  int backlog = BACKLOG;
+  struct sockaddr_storage *clntaddr = NULL;
+  socklen_t clntaddrsize = sizeof(struct sockaddr_storage);
+
+  listen(sock, backlog);
+  int clntsock = accept(sock, (struct sockaddr *) clntaddr, &clntaddrsize);
+
+  return clntsock;
 }
 
 int freeport(int servsock) {
