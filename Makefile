@@ -4,9 +4,9 @@ CFLAGS = -g -Wall
 LDFLAGS =
 SRCS = server.c
 OBJS = $(SRCS:.c=.o)
-PREFIX = server/
+PREFIX = servercode/
 
-PROG = Server
+PROG = server
 
 all: clean $(PROG)
 
