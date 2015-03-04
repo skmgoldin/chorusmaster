@@ -2,7 +2,7 @@ CC = gcc
 LD = gcc
 CFLAGS = -g -Wall
 LDFLAGS =
-SRCS = server.c
+SRCS = servertools.c requesthandler.c
 OBJS = $(SRCS:.c=.o)
 PREFIX = servercode/
 
