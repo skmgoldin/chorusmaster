@@ -5,31 +5,49 @@
 #include <stdio.h>
 #include <string.h>
 
-int main(int argc, char **argv) {
+int makeserver(char *port) {
 
-  if(*(argv + 1) == NULL) {
-    printf("%s\n", "Run again with a port number, please.");
-    exit(1);
+  struct addrinfo *servinfo = NULL;
+  struct addrinfo *hints = malloc(sizeof(struct addrinfo));
+
+  hints = gethints(AF_UNSPEC, SOCK_STREAM, AI_PASSIVE, hints);
+
+  if(getaddrinfo(NULL, port, hints, &servinfo) != 0) {
+    die("getaddrinfo failed");
   }
 
-  int status;
-  struct addrinfo hints;
-  struct addrinfo *servinfo;
+  int sock = getsock(servinfo->ai_family, servinfo->ai_socktype,
+                     servinfo->ai_protocol);
 
-  memset(&hints, 0, sizeof hints); 
-  hints.ai_family = AF_UNSPEC;     
-  hints.ai_socktype = SOCK_STREAM; 
-  hints.ai_flags = AI_PASSIVE;     
-
-  if((status = getaddrinfo(NULL, *(argv + 1), &hints, &servinfo)) != 0) {
-    fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
-    exit(1);
-  }
- 
-  while(1) {
-
-    //Wait for a client to connect
-    //Send to login handler
+  freeport(sock);
+  if(bind(sock, servinfo->ai_addr, servinfo->ai_addrlen) != 0) {
+    die("Bind failed");
   }
 
+  freeaddrinfo(hints);
+  freeaddrinfo(servinfo);
+
+  return sock;
+}
+
+struct addrinfo * gethints(int fam, int socktype, int flags,
+                           struct addrinfo *hints) {
+
+  memset(hints, 0, sizeof(struct addrinfo));
+
+  hints->ai_family = fam;
+  hints->ai_socktype = socktype;
+  hints->ai_flags = flags;
+
+  return hints;
+}
+
+int getsock(int domain, int type, int protocol) {
+  int sock;
+
+  if((sock = socket(domain, type, protocol)) < 0) {
+    die("socket() failed");
+  }
+
+  return sock;
 }
