@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include "servertools.h"
+
 int main(int argc, char **argv) {
 
   if(*(argv + 1) == NULL) {
