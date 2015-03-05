@@ -2,9 +2,10 @@ CC = gcc
 LD = gcc
 CFLAGS = -g -Wall
 LDFLAGS =
-SRCS = servertools.c requesthandler.c wireio.c authenticate.c datastructures.c
+SRCS = servertools.c requesthandler.c wireio.c authenticate.c datastructures.c 
 OBJS = $(SRCS:.c=.o)
-PREFIX = servercode/
+SERVER = servercode/
+DS = datastructures/
 
 PROG = server
 
@@ -13,8 +14,12 @@ all: clean $(PROG)
 $(PROG): $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $(PROG)
 
-%.o: $(PREFIX)%.c
+%.o: $(SERVER)%.c
 	$(CC) $(CFLAGS) -c $<
+
+%.o: $(DS)%.c
+	$(CC) $(CFLAGS) -c $<
+
 
 .PHONY: clean
 clean:
