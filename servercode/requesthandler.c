@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "requesthandler.h"
-
+#include "wireio.h"
 
 int main(int argc, char **argv) {
 
@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
 
   while(1) {
     int clntsock = getconnection(sock);
+    struct clntreq = readclntreq(clntsock); 
     if(authenticate(clntsock)) {
       handlerequest(clntsock);
     }
