@@ -14,6 +14,15 @@ struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock) {
 
   candlemsg->versionid = readfield(clntsock, candlemsg->versionid,
                                    VERSIONIDLEN);
+  candlemsg->versionid = readfield(clntsock, candlemsg->clntid,
+                                   CLNTIDLEN);
+  candlemsg->versionid = readfield(clntsock, (char *) candlemsg->livestatus,
+                                   LIVESTATUSLEN);
+  candlemsg->versionid = readfield(clntsock, candlemsg->reqtype,
+                                   REQTYPELEN);
+  candlemsg->versionid = readfield(clntsock, candlemsg->msg,
+                                   MSGLEN);
+
 
   
 
