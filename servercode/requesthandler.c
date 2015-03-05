@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "servertools.h"
+#include "../sharedcode/servertools.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
