@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
 
   while(1) {
     int clntsock = getconnection(sock);
-    struct candlemsg *candlemsg = malloc(sizeof(struct candlemsg));
+    struct candlemsg *candlemsg = alloccandlemsg();
     candlemsg = readcandlemsg(candlemsg, clntsock); 
     printf("%s\n", candlemsg->msg); // Test printer
     if(authenticate(clntsock)) {
