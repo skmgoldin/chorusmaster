@@ -3,6 +3,8 @@
 
 struct candlemsg *alloccandlemsg();
 
+int dealloccandlemsg(struct candlemsg *candlemsg);
+
 struct candlemsg {
   char *versionid; //32 chars
   char *clntid;    //32 chars

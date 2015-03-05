@@ -11,3 +11,15 @@ struct candlemsg *alloccandlemsg() {
 
   return candlemsg;
 }
+
+int dealloccandlemsg(struct candlemsg *candlemsg) {
+
+  free(candlemsg->msg);
+  free(candlemsg->reqtype);
+  free(candlemsg->livestatus);
+  free(candlemsg->clntid);
+  free(candlemsg->versionid);
+  free(candlemsg);
+
+  return 0;
+}
