@@ -14,15 +14,21 @@ int main(int argc, char **argv) {
   }
 
   char *port = *(argv + 1);
-
   int sock = makeserver(port); 
 
   while(1) {
     int clntsock = getconnection(sock);
-    parserequest(clntsock);
+    if(authenticate(clntsock)) {
+      handlerequest(clntsock);
+    }
+    close(clntsock);
   }
 
   return 0;
+}
+
+int handlerequest(clntsock) {
+  
 }
 
 
