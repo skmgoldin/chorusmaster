@@ -3,6 +3,6 @@
 
 int main(int argc, char **argv);
 
-int handlerequest(clntsock);
+int handlerequest(int clntsock);
 
 #endif
