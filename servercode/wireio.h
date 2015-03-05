@@ -1,6 +1,8 @@
 #ifndef WIREIO_H
 #define WIREIO_H
 
-struct clntreq *readclntreq(struct clntreq *clntreq, int clntsock);
+struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock);
+
+char *readfield(int clntsock, char *field, int fieldsize);
 
 #endif

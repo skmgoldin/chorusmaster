@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
 
   while(1) {
     int clntsock = getconnection(sock);
-    struct clntreq *clntreq = malloc(sizeof(struct clntreq));
-    clntreq = readclntreq(clntreq, clntsock); 
+    struct candlemsg *candlemsg = malloc(sizeof(struct candlemsg));
+    candlemsg = readcandlemsg(candlemsg, clntsock); 
     if(authenticate(clntsock)) {
       handlerequest(clntsock);
     }
