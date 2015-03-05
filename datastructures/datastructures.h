@@ -2,8 +2,8 @@
 #define DATASTRUCTURES_H
 
 struct clntreq {
-  struct clnt *clnt = NULL;
-  struct req *req = NULL;
+  struct clnt *clnt;
+  struct req *req;
 };
 
 struct clnt {
@@ -12,8 +12,8 @@ struct clnt {
 };
 
 struct req {
-  struct clntmsg *msg = NULL;
-  struct clntlogin *login= NULL;
+  struct clntmsg *msg;
+  struct clntlogin *login;
 };
 
 struct clntmsg {
@@ -24,8 +24,8 @@ struct clntmsg {
 };
 
 struct clntlogin {
-  struct clnt *clnt = NULL;
-  char *pw = NULL;
+  struct clnt *clnt;
+  char *pw;
 };
 
 struct liveusers {
