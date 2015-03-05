@@ -1,22 +1,22 @@
+#ifndef DATASTRUCTURES_H
+#define DATASTRUCTURES_H
+
+struct clntreq {
+  struct clnt *clnt = NULL;
+  struct req *req = NULL;
+}
+
 struct clnt {
-  char *username;
+  char *uid;
   int isonline;
 }
 
-struct clntreq {
-  struct clnt *id = NULL;
-  char *reqtype = NULL;
-
+struct req {
+  struct clntmsg *msg = NULL;
+  struct clntlogin *login= NULL;
 }
 
 struct clntmsg {
-  struct clnt *id = NULL;
-  struct msg *msg = NULL;
-}
-
-struct msg {
-  struct clnt *id = NULL;
-
   struct clnt *from;
   struct clnt *to;
 
@@ -24,6 +24,17 @@ struct msg {
 }
 
 struct clntlogin {
-  struct clnt *id = NULL;
+  struct clnt *clnt = NULL;
   char *pw = NULL;
 }
+
+struct liveusers {
+  struct liveusernode *head;
+}
+
+struct liveusernode {
+  struct clnt *user;
+  struct liveusernode *next;
+}
+
+#endif
