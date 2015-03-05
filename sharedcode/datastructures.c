@@ -1,13 +1,19 @@
 #include "datastructures.h"
 #include <stdlib.h>
+#include <string.h>
 
 struct candlemsg *alloccandlemsg() {
   struct candlemsg *candlemsg = malloc(sizeof(struct candlemsg));
   candlemsg->versionid = malloc(sizeof(char) * 32);
+  strcpy(candlemsg->versionid, "candlechat 1.0");
   candlemsg->clntid = malloc(sizeof(char) * 32);
+  *(candlemsg->clntid) = '\n';
   candlemsg->livestatus = malloc(sizeof(int));
+  *(candlemsg->livestatus) = 0;
   candlemsg->reqtype = malloc(sizeof(char) * 32);
+  *(candlemsg->reqtype) = '\n';
   candlemsg->msg = malloc(sizeof(char) * 4096);
+  *(candlemsg->msg) = '\n';
 
   return candlemsg;
 }
