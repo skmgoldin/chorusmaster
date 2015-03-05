@@ -1,14 +1,29 @@
-#ifndef DATASTRUCTURES_H
-#define DATASTRUCTURES_H
+struct clnt {
+  char *username;
+  int isonline;
+}
 
-struct clnt;
+struct clntreq {
+  struct clnt *id = NULL;
+  char *reqtype = NULL;
 
-struct clntreq;
+}
 
-struct clntmsg;
+struct clntmsg {
+  struct clnt *id = NULL;
+  struct msg *msg = NULL;
+}
 
-struct msg;
+struct msg {
+  struct clnt *id = NULL;
 
-struct clntlogin;
+  struct clnt *from;
+  struct clnt *to;
 
-#endif
+  char *msg;
+}
+
+struct clntlogin {
+  struct clnt *id = NULL;
+  char *pw = NULL;
+}
