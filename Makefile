@@ -2,17 +2,24 @@ CC = gcc
 LD = gcc
 CFLAGS = -g -Wall
 LDFLAGS =
-SRCS = servertools.c requesthandler.c wireio.c authenticate.c datastructures.c 
-OBJS = $(SRCS:.c=.o)
+SERVSRCS = servertools.c requesthandler.c wireio.c authenticate.c datastructures.c 
+CLNTSRCS = datastructures.c candleclient.c
+SERVOBJS = $(SERVSRCS:.c=.o)
+CLNTOBJS = $(CLNTSRCS:.c=.o)
 SERVER = servercode/
 DS = datastructures/
+CLNT = clientcode/
 
-PROG = server
+SERVPROG = server
+CLNTPROG = client
 
-all: clean $(PROG)
+all: clean $(SERVPROG) $(CLNTPROG)
 
-$(PROG): $(OBJS)
-	$(LD) $(LDFLAGS) $(OBJS) -o $(PROG)
+$(SERVPROG): $(SERVOBJS)
+	$(LD) $(LDFLAGS) $(SERVOBJS) -o $(SERVPROG)
+
+$(CLNTPROG): $(CLNTOBJS)
+	$(LD) $(LDFLAGS) $(CLNTOBJS) -o $(CLNTPROG)
 
 %.o: $(SERVER)%.c
 	$(CC) $(CFLAGS) -c $<
@@ -20,7 +27,9 @@ $(PROG): $(OBJS)
 %.o: $(DS)%.c
 	$(CC) $(CFLAGS) -c $<
 
+%.o: $(CLNT)%.c
+	$(CC) $(CFLAGS) -c $<
 
 .PHONY: clean
 clean:
-	rm -f $(PROG) $(OBJS)
+	rm -f *.o $(SERVPROG) $(CLNTPROG) 
