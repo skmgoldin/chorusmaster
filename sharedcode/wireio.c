@@ -19,13 +19,13 @@ struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock) {
 
   candlemsg->versionid = readfield(clntsock, candlemsg->versionid,
                                    VERSIONIDLEN);
-  candlemsg->versionid = readfield(clntsock, candlemsg->clntid,
+  candlemsg->clntid = readfield(clntsock, candlemsg->clntid,
                                    CLNTIDLEN);
-  candlemsg->versionid = readfield(clntsock, (char *) candlemsg->livestatus,
+  candlemsg->livestatus = (int *) readfield(clntsock, (char *) candlemsg->livestatus,
                                    LIVESTATUSLEN);
-  candlemsg->versionid = readfield(clntsock, candlemsg->reqtype,
+  candlemsg->reqtype = readfield(clntsock, candlemsg->reqtype,
                                    REQTYPELEN);
-  candlemsg->versionid = readfield(clntsock, candlemsg->msg,
+  candlemsg->msg = readfield(clntsock, candlemsg->msg,
                                    MSGLEN);
 
   return candlemsg;
@@ -61,4 +61,22 @@ int makeconnection(char *ip, char *port) {
   deallocsockdata(sockdata);
 
   return sock;
+}
+
+struct candlemsg *sendcandlemsg(struct candlemsg *candlemsg, int sock) {
+  sendfield(sock, candlemsg->versionid, sizeof(candlemsg->versionid));
+  sendfield(sock, candlemsg->clntid, sizeof(candlemsg->clntid));
+  sendfield(sock, (char *) candlemsg->livestatus,
+            sizeof(candlemsg->livestatus));
+  sendfield(sock, candlemsg->reqtype, sizeof(candlemsg->reqtype));
+  sendfield(sock, candlemsg->msg, sizeof(candlemsg->msg));
+
+  return candlemsg;
+}
+
+char *sendfield(int sock, char *field, int fieldsize) {
+
+  send(sock, field, fieldsize, 0);
+
+  return field;
 }

@@ -7,4 +7,8 @@ char *readfield(int clntsock, char *field, int fieldsize);
 
 int makeconnection(char *ip, char *port);
 
+struct candlemsg *sendcandlemsg(struct candlemsg *candlemsg, int sock);
+
+char *sendfield(int sock, char *field, int fieldsize);
+
 #endif
