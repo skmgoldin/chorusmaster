@@ -10,29 +10,38 @@
 
 int makeserver(char *port) {
 
-  struct addrinfo *servinfo = NULL;
-  struct addrinfo *hints = malloc(sizeof(struct addrinfo));
+  struct sockdata *sockdata = allocsockdata();
 
-  hints = gethints(AF_UNSPEC, SOCK_STREAM, AI_PASSIVE, hints);
+  sockdata = makesock(NULL, port, sockdata);
 
-  if(getaddrinfo(NULL, port, hints, &servinfo) != 0) {
-    fprintf(stderr, "%s\n", "getaddrinfo failed.");
-    exit(1);
-  }
-
-  int sock = getsock(servinfo->ai_family, servinfo->ai_socktype,
-                     servinfo->ai_protocol);
-
-  freeport(sock);
-  if(bind(sock, servinfo->ai_addr, servinfo->ai_addrlen) != 0) {
+  freeport(sockdata->sock);
+  if(bind(sockdata->sock, sockdata->servinfo->ai_addr,
+          sockdata->servinfo->ai_addrlen) != 0) {
     fprintf(stderr, "%s\n", "Bind failed.");
     exit(1);
   }
 
-  freeaddrinfo(hints);
-  freeaddrinfo(servinfo);
+  int sock = sockdata->sock;
+  deallocsockdata(sockdata);
 
   return sock;
+}
+
+struct sockdata *makesock(char *ip, char *port, struct sockdata *sockdata) {
+
+  sockdata->hints = gethints(AF_UNSPEC, SOCK_STREAM, AI_PASSIVE,
+                             sockdata->hints);
+
+  if(getaddrinfo(ip, port, sockdata->hints, &(sockdata->servinfo)) != 0) {
+    fprintf(stderr, "%s\n", "getaddrinfo failed.");
+    exit(1);
+  }
+
+  sockdata->sock = getsock(sockdata->servinfo->ai_family,
+                           sockdata->servinfo->ai_socktype,
+                           sockdata->servinfo->ai_protocol);
+
+  return sockdata;
 }
 
 struct addrinfo * gethints(int fam, int socktype, int flags,
@@ -79,4 +88,20 @@ int freeport(int servsock) {
   }
 
   return 1;
+}
+
+struct sockdata *allocsockdata() {
+  struct sockdata *sockdata = malloc(sizeof(struct sockdata));
+  sockdata->servinfo = NULL;
+  sockdata->hints = malloc(sizeof(struct addrinfo));
+
+  return sockdata;
+}
+
+int deallocsockdata(struct sockdata *sockdata) {
+  freeaddrinfo(sockdata->servinfo);
+  freeaddrinfo(sockdata->hints);
+  free(sockdata);
+
+  return 0;
 }

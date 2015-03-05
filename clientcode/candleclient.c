@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../sharedcode/wireio.h"
 
 int main(int argc, char **argv) {
 
@@ -12,5 +13,8 @@ int main(int argc, char **argv) {
   char *ip = *(argv + 1);
   char *port = *(argv + 2);
 
+  int sock = makeconnection(ip, port);
+
+  while(1) {;}
   return 0;
 }

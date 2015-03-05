@@ -3,6 +3,11 @@
 #include <sys/socket.h>
 #include "wireio.h"
 #include <string.h>
+#include <sys/types.h>
+#include <netdb.h>
+#include <stdio.h>
+#include "servertools.h"
+
 
 #define VERSIONIDLEN 32
 #define CLNTIDLEN 32
@@ -39,4 +44,21 @@ char *readfield(int clntsock, char *field, int fieldsize) {
   free(buf);
 
   return field;
+}
+
+int makeconnection(char *ip, char *port) {
+  struct sockdata *sockdata = allocsockdata();
+  sockdata = makesock(ip, port, sockdata);
+
+  if(connect(sockdata->sock, sockdata->servinfo->ai_addr,
+             sockdata->servinfo->ai_addrlen) != 0) {
+    fprintf(stderr, "%s\n", "connect failed.");
+    exit(1);
+  }
+
+  int sock = sockdata->sock;
+
+  deallocsockdata(sockdata);
+
+  return sock;
 }
