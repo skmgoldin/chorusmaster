@@ -2,9 +2,9 @@ CC = gcc
 LD = gcc
 CFLAGS = -g -Wall
 LDFLAGS =
-SERVSRCS = servertools.c requesthandler.c authenticate.c $(SHAREDSRCS)
+SERVSRCS = requesthandler.c authenticate.c $(SHAREDSRCS)
 CLNTSRCS = candleclient.c $(SHAREDSRCS)
-SHAREDSRCS = datastructures.c wireio.c
+SHAREDSRCS = datastructures.c wireio.c servertools.c
 SERVOBJS = $(SERVSRCS:.c=.o)
 CLNTOBJS = $(CLNTSRCS:.c=.o)
 SERVER = servercode/
