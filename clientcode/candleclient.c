@@ -31,6 +31,8 @@ int login(int sock) {
   printf("%s", "Password: ");
   fgets(candlemsg->msg, 32, stdin);
 
+  sendcandlemsg(candlemsg, sock);
+
   dealloccandlemsg(candlemsg);
 
   return 0;
