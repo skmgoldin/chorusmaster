@@ -1,39 +1,14 @@
 #ifndef DATASTRUCTURES_H
 #define DATASTRUCTURES_H
 
+struct candlemsg *alloccandlemsg();
+
 struct candlemsg {
-  char *versionid;
-  char *clntid;
-  int livestatus;
-  char *reqtype;
-  char *msg;
-};
-
-struct clntreq {
-  struct clnt *clnt;
-  struct req *req;
-};
-
-struct clnt {
-  char *username;
-  int isonline;
-};
-
-struct req {
-  struct clntmsg *msg;
-  struct clntlogin *login;
-};
-
-struct clntmsg {
-  struct clnt *from;
-  struct clnt *to;
-
-  char *msg;
-};
-
-struct clntlogin {
-  struct clnt *clnt;
-  char *pw;
+  char *versionid; //32 chars
+  char *clntid;    //32 chars
+  int *livestatus; //1 int 
+  char *reqtype;   //32 chars
+  char *msg;       //4096 chars
 };
 
 struct liveusers {
