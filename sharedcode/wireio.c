@@ -1,4 +1,4 @@
-#include "../datastructures/datastructures.h"
+#include "datastructures.h"
 #include <stdlib.h>
 #include <sys/socket.h>
 #include "wireio.h"

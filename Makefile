@@ -2,12 +2,13 @@ CC = gcc
 LD = gcc
 CFLAGS = -g -Wall
 LDFLAGS =
-SERVSRCS = servertools.c requesthandler.c wireio.c authenticate.c datastructures.c 
-CLNTSRCS = datastructures.c candleclient.c
+SERVSRCS = servertools.c requesthandler.c authenticate.c $(SHAREDSRCS)
+CLNTSRCS = candleclient.c $(SHAREDSRCS)
+SHAREDSRCS = datastructures.c wireio.c
 SERVOBJS = $(SERVSRCS:.c=.o)
 CLNTOBJS = $(CLNTSRCS:.c=.o)
 SERVER = servercode/
-DS = datastructures/
+SHARED = sharedcode/
 CLNT = clientcode/
 
 SERVPROG = server
@@ -24,7 +25,7 @@ $(CLNTPROG): $(CLNTOBJS)
 %.o: $(SERVER)%.c
 	$(CC) $(CFLAGS) -c $<
 
-%.o: $(DS)%.c
+%.o: $(SHARED)%.c
 	$(CC) $(CFLAGS) -c $<
 
 %.o: $(CLNT)%.c

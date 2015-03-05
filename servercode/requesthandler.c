@@ -4,8 +4,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "requesthandler.h"
-#include "wireio.h"
-#include "../datastructures/datastructures.h"
+#include "../sharedcode/wireio.h"
+#include "../sharedcode/datastructures.h"
 #include "authenticate.h"
 #include <unistd.h>
 
@@ -23,6 +23,7 @@ int main(int argc, char **argv) {
     int clntsock = getconnection(sock);
     struct candlemsg *candlemsg = malloc(sizeof(struct candlemsg));
     candlemsg = readcandlemsg(candlemsg, clntsock); 
+    printf("%s\n", candlemsg->msg); // Test printer
     if(authenticate(clntsock)) {
       handlerequest(clntsock);
     }
