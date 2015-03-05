@@ -7,6 +7,7 @@
 #include "wireio.h"
 #include "../datastructures/datastructures.h"
 #include "authenticate.h"
+#include <unistd.h>
 
 int main(int argc, char **argv) {
 
