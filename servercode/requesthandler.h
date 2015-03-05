@@ -3,4 +3,6 @@
 
 int main(int argc, char **argv);
 
+int handlerequest(clntsock);
+
 #endif
