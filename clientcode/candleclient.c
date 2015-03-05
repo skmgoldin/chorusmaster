@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../sharedcode/wireio.h"
+#include "candleclient.h"
+#include "../sharedcode/datastructures.h"
 
 int main(int argc, char **argv) {
 
@@ -15,6 +17,21 @@ int main(int argc, char **argv) {
 
   int sock = makeconnection(ip, port);
 
+  login(sock);
+
   while(1) {;}
+  return 0;
+}
+
+int login(int sock) {
+  struct candlemsg *candlemsg = alloccandlemsg();
+
+  printf("%s", "Username: ");
+  fgets(candlemsg->clntid, 32, stdin);
+  printf("%s", "Password: ");
+  fgets(candlemsg->msg, 32, stdin);
+
+  dealloccandlemsg(candlemsg);
+
   return 0;
 }
