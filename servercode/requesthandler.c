@@ -5,6 +5,8 @@
 #include <sys/socket.h>
 #include "requesthandler.h"
 #include "wireio.h"
+#include "../datastructures/datastructures.h"
+#include "authenticate.h"
 
 int main(int argc, char **argv) {
 
@@ -18,7 +20,8 @@ int main(int argc, char **argv) {
 
   while(1) {
     int clntsock = getconnection(sock);
-    struct clntreq = readclntreq(clntsock); 
+    struct clntreq *clntreq = malloc(sizeof(struct clntreq));
+    clntreq = readclntreq(clntreq, clntsock); 
     if(authenticate(clntsock)) {
       handlerequest(clntsock);
     }
@@ -30,6 +33,7 @@ int main(int argc, char **argv) {
 
 int handlerequest(clntsock) {
   
+  return 0;
 }
 
 
