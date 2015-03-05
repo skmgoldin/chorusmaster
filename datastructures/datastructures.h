@@ -1,13 +1,21 @@
 #ifndef DATASTRUCTURES_H
 #define DATASTRUCTURES_H
 
+struct candlemsg {
+  char *versionid;
+  char *clntid;
+  int livestatus;
+  char *reqtype;
+  char *msg;
+};
+
 struct clntreq {
   struct clnt *clnt;
   struct req *req;
 };
 
 struct clnt {
-  char *uid;
+  char *username;
   int isonline;
 };
 
