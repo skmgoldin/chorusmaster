@@ -23,9 +23,6 @@ struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock) {
   candlemsg->versionid = readfield(clntsock, candlemsg->msg,
                                    MSGLEN);
 
-
-  
-
   return candlemsg;
 }
 
