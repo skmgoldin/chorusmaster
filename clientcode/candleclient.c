@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 int login(int sock) {
 
   char *username = malloc(sizeof(char) * FROMLEN);
-  char *msg = malloc(sizeof(char) * MSGLEN;
+  char *msg = malloc(sizeof(char) * MSGLEN);
   char *reqtype = "login";
 
   printf("%s", "Username: ");
