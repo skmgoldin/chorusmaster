@@ -31,9 +31,9 @@ int login(int sock) {
   char *reqtype = "login";
 
   printf("%s", "Username: ");
-  fgets(username, 32, stdin);
+  fgets(username, FROMLEN, stdin);
   printf("%s", "Password: ");
-  fgets(msg, 32, stdin);
+  fgets(msg, MSGLEN, stdin);
 
   struct candlemsg *candlemsg = alloccandlemsg("candlechat1.0", username,
                                                reqtype, msg);
