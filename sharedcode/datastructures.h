@@ -9,7 +9,6 @@ int dealloccandlemsg(struct candlemsg *candlemsg);
 struct candlemsg {
   char *versionid; //32 chars
   char *from;    //32 chars
-  char *livestatus; //1 char 
   char *reqtype;   //32 chars
   char *msg;       //4096 chars
 };
