@@ -9,19 +9,26 @@
 #include "servertools.h"
 #include "globalvalues.h"
 
-struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock) {
+struct candlemsg *readcandlemsg(int clntsock) {
 
-  candlemsg->versionid = readfield(clntsock, candlemsg->versionid,
-                                   VERSIONIDLEN);
+  char *versionid = malloc(sizeof(char) * VERSIONIDLEN);
+  versionid = readfield(clntsock, versionid, VERSIONIDLEN);
 
-  candlemsg->from = readfield(clntsock, candlemsg->from,
-                                   FROMLEN);
+  char *from = malloc(sizeof(char) * FROMLEN);
+  from = readfield(clntsock, from, FROMLEN);
 
-  candlemsg->reqtype = readfield(clntsock, candlemsg->reqtype,
-                                   REQTYPELEN);
+  char *reqtype = malloc(sizeof(char) * REQTYPELEN);
+  reqtype = readfield(clntsock, reqtype, REQTYPELEN);
 
-  candlemsg->msg = readfield(clntsock, candlemsg->msg,
-                                   MSGLEN);
+  char *msg = malloc(sizeof(char) * MSGLEN);
+  msg = readfield(clntsock, msg, MSGLEN);
+
+  struct candlemsg *candlemsg = alloccandlemsg(versionid, from, reqtype, msg);
+
+  free(versionid);
+  free(from);
+  free(reqtype);
+  free(msg);
 
   return candlemsg;
 }
@@ -29,7 +36,7 @@ struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock) {
 char *readfield(int clntsock, char *field, int fieldsize) {
 
   char *buf = malloc(sizeof(char) * fieldsize);
-  int len = sizeof(buf);
+  int len = fieldsize;
   int flags = 0;
 
   recv(clntsock, buf, len, flags);
@@ -63,8 +70,6 @@ int makeconnection(char *ip, char *port) {
 struct candlemsg *sendcandlemsg(struct candlemsg *candlemsg, int sock) {
   sendfield(sock, candlemsg->versionid, sizeof(candlemsg->versionid));
   sendfield(sock, candlemsg->from, sizeof(candlemsg->from));
-  sendfield(sock, (char *) candlemsg->livestatus,
-            sizeof(candlemsg->livestatus));
   sendfield(sock, candlemsg->reqtype, sizeof(candlemsg->reqtype));
   sendfield(sock, candlemsg->msg, sizeof(candlemsg->msg));
 
