@@ -2,23 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct candlemsg *alloccandlemsg(char *versionid, char *from) {
+struct candlemsg *alloccandlemsg(char *versionid, char *from, char *reqtype,
+                                 char *msg) {
+
   struct candlemsg *candlemsg = malloc(sizeof(struct candlemsg));
 
   candlemsg->versionid = malloc(sizeof(char) * 32);
-  strcpy(candlemsg->versionid, "candlechat 1.0");
+  strcpy(candlemsg->versionid, versionid);
 
   candlemsg->from = malloc(sizeof(char) * 32);
-  *(candlemsg->from) = '\n';
-
-  candlemsg->livestatus = malloc(sizeof(int));
-  *(candlemsg->livestatus) = 0;
+  strcpy(candlemsg->from, from);
 
   candlemsg->reqtype = malloc(sizeof(char) * 32);
-  *(candlemsg->reqtype) = '\n';
+  strcpy(candlemsg->reqtype, reqtype);
 
   candlemsg->msg = malloc(sizeof(char) * 4096);
-  *(candlemsg->msg) = '\n';
+  strcpy(candlemsg->msg, msg);
 
   return candlemsg;
 }
