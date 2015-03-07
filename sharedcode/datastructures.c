@@ -26,7 +26,6 @@ int dealloccandlemsg(struct candlemsg *candlemsg) {
 
   free(candlemsg->msg);
   free(candlemsg->reqtype);
-  free(candlemsg->livestatus);
   free(candlemsg->from);
   free(candlemsg->versionid);
   free(candlemsg);
