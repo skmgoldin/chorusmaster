@@ -7,24 +7,19 @@
 #include <netdb.h>
 #include <stdio.h>
 #include "servertools.h"
-
-
-#define VERSIONIDLEN 32
-#define FROMLEN 32
-#define LIVESTATUSLEN 1
-#define REQTYPELEN 32
-#define MSGLEN 4096
+#include "globalvalues.h"
 
 struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock) {
 
   candlemsg->versionid = readfield(clntsock, candlemsg->versionid,
                                    VERSIONIDLEN);
+
   candlemsg->from = readfield(clntsock, candlemsg->from,
                                    FROMLEN);
-  candlemsg->livestatus = (int *) readfield(clntsock, (char *) candlemsg->livestatus,
-                                   LIVESTATUSLEN);
+
   candlemsg->reqtype = readfield(clntsock, candlemsg->reqtype,
                                    REQTYPELEN);
+
   candlemsg->msg = readfield(clntsock, candlemsg->msg,
                                    MSGLEN);
 
@@ -33,13 +28,15 @@ struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock) {
 
 char *readfield(int clntsock, char *field, int fieldsize) {
 
-  void *buf = malloc(sizeof(char) * fieldsize);
+  char *buf = malloc(sizeof(char) * fieldsize);
   int len = sizeof(buf);
   int flags = 0;
 
   recv(clntsock, buf, len, flags);
 
-  strcpy(field, (char *) buf);
+  printf("%s\n", buf);
+
+  strcpy(field, buf);
 
   free(buf);
 
