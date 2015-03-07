@@ -68,10 +68,10 @@ int makeconnection(char *ip, char *port) {
 }
 
 struct candlemsg *sendcandlemsg(struct candlemsg *candlemsg, int sock) {
-  sendfield(sock, candlemsg->versionid, sizeof(candlemsg->versionid));
-  sendfield(sock, candlemsg->from, sizeof(candlemsg->from));
-  sendfield(sock, candlemsg->reqtype, sizeof(candlemsg->reqtype));
-  sendfield(sock, candlemsg->msg, sizeof(candlemsg->msg));
+  sendfield(sock, candlemsg->versionid, VERSIONIDLEN);
+  sendfield(sock, candlemsg->from, FROMLEN);
+  sendfield(sock, candlemsg->reqtype, REQTYPELEN);
+  sendfield(sock, candlemsg->msg, MSGLEN);
 
   return candlemsg;
 }
