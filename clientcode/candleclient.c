@@ -3,6 +3,7 @@
 #include "../sharedcode/wireio.h"
 #include "candleclient.h"
 #include "../sharedcode/datastructures.h"
+#include "../sharedcode/globalvalues.h"
 
 int main(int argc, char **argv) {
 
@@ -24,12 +25,21 @@ int main(int argc, char **argv) {
 }
 
 int login(int sock) {
-  struct candlemsg *candlemsg = alloccandlemsg();
+
+  char *username = malloc(sizeof(char) * FROMLEN);
+  char *msg = malloc(sizeof(char) * MSGLEN;
+  char *reqtype = "login";
 
   printf("%s", "Username: ");
-  fgets(candlemsg->from, 32, stdin);
+  fgets(username, 32, stdin);
   printf("%s", "Password: ");
-  fgets(candlemsg->msg, 32, stdin);
+  fgets(msg, 32, stdin);
+
+  struct candlemsg *candlemsg = alloccandlemsg("candlechat1.0", username,
+                                               reqtype, msg);
+
+  free(username);
+  free(msg);
 
   sendcandlemsg(candlemsg, sock);
 
