@@ -10,7 +10,7 @@
 
 
 #define VERSIONIDLEN 32
-#define CLNTIDLEN 32
+#define FROMLEN 32
 #define LIVESTATUSLEN 1
 #define REQTYPELEN 32
 #define MSGLEN 4096
@@ -19,8 +19,8 @@ struct candlemsg *readcandlemsg(struct candlemsg *candlemsg, int clntsock) {
 
   candlemsg->versionid = readfield(clntsock, candlemsg->versionid,
                                    VERSIONIDLEN);
-  candlemsg->clntid = readfield(clntsock, candlemsg->clntid,
-                                   CLNTIDLEN);
+  candlemsg->from = readfield(clntsock, candlemsg->from,
+                                   FROMLEN);
   candlemsg->livestatus = (int *) readfield(clntsock, (char *) candlemsg->livestatus,
                                    LIVESTATUSLEN);
   candlemsg->reqtype = readfield(clntsock, candlemsg->reqtype,
@@ -65,7 +65,7 @@ int makeconnection(char *ip, char *port) {
 
 struct candlemsg *sendcandlemsg(struct candlemsg *candlemsg, int sock) {
   sendfield(sock, candlemsg->versionid, sizeof(candlemsg->versionid));
-  sendfield(sock, candlemsg->clntid, sizeof(candlemsg->clntid));
+  sendfield(sock, candlemsg->from, sizeof(candlemsg->from));
   sendfield(sock, (char *) candlemsg->livestatus,
             sizeof(candlemsg->livestatus));
   sendfield(sock, candlemsg->reqtype, sizeof(candlemsg->reqtype));

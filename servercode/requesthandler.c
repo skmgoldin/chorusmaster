@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   int sock = makeserver(port); 
 
   while(1) {
-    int clntsock = getconnection(sock);
+    int clntsock = getconnection(sock); // Update getconnection() to return struct sockdata.
     struct candlemsg *candlemsg = alloccandlemsg();
     candlemsg = readcandlemsg(candlemsg, clntsock); 
     printf("%s\n", candlemsg->msg); // Test printer

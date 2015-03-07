@@ -27,7 +27,7 @@ int login(int sock) {
   struct candlemsg *candlemsg = alloccandlemsg();
 
   printf("%s", "Username: ");
-  fgets(candlemsg->clntid, 32, stdin);
+  fgets(candlemsg->from, 32, stdin);
   printf("%s", "Password: ");
   fgets(candlemsg->msg, 32, stdin);
 
