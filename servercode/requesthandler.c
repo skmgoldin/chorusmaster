@@ -35,11 +35,11 @@ int main(int argc, char **argv) {
     candlelog(candlemsg);
 
     if(authenticate(candlemsg, userlist)) {
-      serverlog("User authenticated.");
+      serverlog("User authenticated.\n");
       handlerequest(candlemsg, userlist);
     }
     else {
-      serverlog("User authentication failed.");
+      serverlog("User authentication failed.\n");
       //send login signal
     }
 
