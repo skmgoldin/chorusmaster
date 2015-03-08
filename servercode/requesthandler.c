@@ -29,8 +29,10 @@ int main(int argc, char **argv) {
     candlelog(candlemsg);
 
     if(authenticate(candlemsg->from, candlemsg->msg)) {
+      serverlog("User authenticated.");
       handlerequest(clntsock);
     }
+    else { serverlog("User authentication failed."); }
 
     close(clntsock);
     dealloccandlemsg(candlemsg);
