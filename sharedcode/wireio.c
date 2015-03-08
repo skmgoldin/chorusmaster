@@ -41,8 +41,6 @@ char *readfield(int clntsock, char *field, int fieldsize) {
 
   recv(clntsock, buf, len, flags);
 
-  printf("%s\n", buf);
-
   strcpy(field, buf);
 
   free(buf);
