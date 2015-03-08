@@ -46,14 +46,19 @@ int dealloccandlemsg(struct candlemsg *candlemsg) {
 struct userlist *adduser(char *username, struct userlist
                                   *userlist) {
   
+  struct usernode *newnode = malloc(sizeof(struct usernode));
+  newnode = initusernode(newnode, username);
+
+  if(userlist->head == NULL) {
+    userlist->head = newnode;
+    return userlist;
+  }
+
   struct usernode *currnode = userlist->head;
 
   while(currnode->next != NULL) {
     currnode = currnode->next;
   }
-
-  struct usernode *newnode = malloc(sizeof(struct usernode));
-  newnode = initusernode(newnode, username);
 
   currnode->next = newnode;
 
