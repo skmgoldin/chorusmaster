@@ -27,6 +27,8 @@ int deinituserlist(struct userlist *userlist);
 
 int deinitallnodes(struct usernode *currnode);
 
+struct usernode *finduser(char *username, struct userlist *userlist);
+
 struct userlist {
   struct usernode *head;
 };
