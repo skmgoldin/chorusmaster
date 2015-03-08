@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     dealloccandlemsg(candlemsg);
   }
 
-  //free userlist
+  deinituserlist(userlist);
   return 0;
 }
 
