@@ -8,6 +8,7 @@
 #include "../sharedcode/datastructures.h"
 #include "authenticate.h"
 #include <unistd.h>
+#include "logger.h"
 
 int main(int argc, char **argv) {
 
@@ -24,6 +25,8 @@ int main(int argc, char **argv) {
     int clntsock = getconnection(sock); // Update getconnection() to return struct sockdata.
 
     struct candlemsg *candlemsg = readcandlemsg(clntsock); 
+
+    candlelog(candlemsg);
 
     if(authenticate(clntsock)) {
       handlerequest(clntsock);
