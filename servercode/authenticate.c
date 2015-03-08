@@ -1,4 +1,4 @@
-int authenticate(int clntsock) {
+int authenticate(struct candlemsg *candlemsg) {
   
   return 0;
   //Get uid.

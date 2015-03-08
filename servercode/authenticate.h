@@ -1,6 +1,6 @@
 #ifndef AUTHENTICATE_H
 #define AUTHENTICATE_H
 
-int authenticate(int clntsock);
+int authenticate(struct candlemsg *candlemsg);
 
 #endif
