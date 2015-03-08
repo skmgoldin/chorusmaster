@@ -5,4 +5,6 @@ struct candlemsg *candlelog(struct candlemsg *candlemsg);
 
 char *writelog(char *msg);
 
+char *serverlog(char *msg);
+
 #endif

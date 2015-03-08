@@ -3,10 +3,11 @@
 #include "logger.h"
 #include "../sharedcode/globalvalues.h"
 #include <stdlib.h>
+#include <ctype.h>
 
 struct candlemsg *candlelog(struct candlemsg *candlemsg) {
 
-  writelog("==MESSAGE==\n");
+  serverlog("message");
 
   char *buf = malloc(sizeof(char) * MSGLEN * 2);
 
@@ -26,6 +27,23 @@ struct candlemsg *candlelog(struct candlemsg *candlemsg) {
   return candlemsg;
 }
 
+char *serverlog(char *msg) {
+
+  char *buf = malloc(sizeof(char) * MSGLEN * 2);
+
+  sprintf(buf, "%s%s%s\n", "==", msg, "==");
+
+  int i;
+  for(i = 0; *(buf + i) != '\0'; i++) {
+    *(buf + i) = toupper(*(buf + i));
+  }
+
+  writelog(buf);
+
+  free(buf);
+
+  return msg;
+}
 
 char *writelog(char *msg) {
 
