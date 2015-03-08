@@ -6,7 +6,7 @@
 
 struct candlemsg *candlelog(struct candlemsg *candlemsg) {
 
-  serverlog("==MESSAGE==");
+  serverlog("==MESSAGE==\n");
 
   char *buf = malloc(sizeof(char) * MSGLEN * 2);
 
