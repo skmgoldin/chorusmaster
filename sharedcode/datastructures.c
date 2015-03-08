@@ -44,9 +44,9 @@ int dealloccandlemsg(struct candlemsg *candlemsg) {
 }
 
 struct userlist *adduser(char *username, struct userlist
-                                  *users) {
+                                  *userlist) {
   
-  struct usernode *currnode = users->head;
+  struct usernode *currnode = userlist->head;
 
   while(currnode->next != NULL) {
     currnode = currnode->next;
@@ -60,7 +60,7 @@ struct userlist *adduser(char *username, struct userlist
   return userlist;
 }
 
-int deinitusernode(struct usernode node) {
+int deinitusernode(struct usernode *node) {
 
   free(node->username);
   free(node);
@@ -69,14 +69,14 @@ int deinitusernode(struct usernode node) {
 }
 
 struct userlist *rmvuser(char *username, struct userlist
-                         *users) {
+                         *userlist) {
   
-  struct usernode *currnode = users->head;
+  struct usernode *currnode = userlist->head;
 
   if(strcmp(currnode->username, username) == 0) {
     struct usernode *newhead = currnode->next;
-    deinitusernode(currnode->username);
-    users->head = newhead;
+    deinitusernode(currnode);
+    userlist->head = newhead;
 
     return userlist;
   }
@@ -107,10 +107,10 @@ struct usernode *initusernode(struct usernode *newnode, char *username) {
   return newnode;
 }
 
-struct userlist *inituserlist(struct userlist *users) {
+struct userlist *inituserlist(struct userlist *userlist) {
 
-  users->head = NULL;
+  userlist->head = NULL;
 
-  return users;
+  return userlist;
 }
 

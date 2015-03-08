@@ -13,20 +13,20 @@ struct candlemsg {
   char *msg;       //4096 chars
 };
 
-struct userslist *adduser(char *username, struct userslist
+struct userlist *adduser(char *username, struct userlist
                                   *users); 
   
 struct usernode *initusernode(struct usernode *newnode,
                                       char *username);
 
-struct userslist *inituserslist(struct userslist *users);
+struct userlist *inituserlist(struct userlist *users);
 
-int deinitusernode(struct usernode node);
+int deinitusernode(struct usernode *node);
 
-struct userslist *rmvuser(char *username, struct userslist
+struct userlist *rmvuser(char *username, struct userlist
                                   *users);
 
-struct userslist {
+struct userlist {
   struct usernode *head;
 };
 
