@@ -18,5 +18,6 @@ int authenticate(char *username, char *password) {
     }
   }
   
+  fclose(credfile);
   return 0;
 }
