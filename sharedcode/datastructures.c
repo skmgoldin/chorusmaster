@@ -60,11 +60,12 @@ struct liveuserslist *addliveuser(char *username, struct liveuserslist
   return liveuserslist;
 }
 
-struct liveusernode *deinitliveusernode(struct liveusernode node) {
+int deinitliveusernode(struct liveusernode node) {
 
   free(node->username);
+  free(node);
 
-  return node;
+  return 0;
 }
 
 struct liveuserslist *rmvliveuser(char *username, struct liveuserslist
@@ -74,8 +75,7 @@ struct liveuserslist *rmvliveuser(char *username, struct liveuserslist
 
   if(strcmp(currnode->username, username) == 0) {
     struct liveusernode *newhead = currnode->next;
-    free(currnode->username);
-    free(currnode);
+    deinitliveusernode(currnode->username);
     liveusers->head = newhead;
 
     return liveuserslist;
@@ -85,8 +85,7 @@ struct liveuserslist *rmvliveuser(char *username, struct liveuserslist
 
     if(strcmp(currnode->next->username, username) == 0) {
       struct liveusernode *newnext = currnode->next->next;
-      free(currnode->next->username);
-      free(currnode->next);
+      deinitliveusernode(currnode->next);
       currnode->next = newnext;
 
       return liveuserslist;
