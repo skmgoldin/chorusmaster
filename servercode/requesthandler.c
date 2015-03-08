@@ -34,11 +34,14 @@ int main(int argc, char **argv) {
 
     candlelog(candlemsg);
 
-    if(authenticate(candlemsg->from, candlemsg->msg)) {
+    if(authenticate(candlemsg, userlist)) {
       serverlog("User authenticated.");
       handlerequest(candlemsg, userlist);
     }
-    else { serverlog("User authentication failed."); }
+    else {
+      serverlog("User authentication failed.");
+      //send login signal
+    }
 
     close(clntsock); // Could this be closed earlier, as soon as the candlemessage is read?
     dealloccandlemsg(candlemsg);
@@ -51,7 +54,6 @@ int main(int argc, char **argv) {
 int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist) {
 
   if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
-    userlogin(candlemsg->from, userlist);
     return 0;
   }
   
