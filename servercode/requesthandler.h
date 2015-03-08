@@ -5,6 +5,6 @@
 
 int main(int argc, char **argv);
 
-int handlerequest(struct candlemsg *candlemsg);
+int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist);
 
 #endif
