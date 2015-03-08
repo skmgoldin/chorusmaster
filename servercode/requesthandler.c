@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
     candlelog(candlemsg);
 
-    if(authenticate(clntsock)) {
+    if(authenticate(candlemsg->from, candlemsg->msg)) {
       handlerequest(clntsock);
     }
 
