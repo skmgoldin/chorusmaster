@@ -9,6 +9,9 @@
 #include "authenticate.h"
 #include <unistd.h>
 #include "logger.h"
+#include <string.h>
+#include "../sharedcode/globalvalues.h"
+#include "userstatus.h"
 
 int main(int argc, char **argv) {
 
@@ -34,7 +37,7 @@ int main(int argc, char **argv) {
     }
     else { serverlog("User authentication failed."); }
 
-    close(clntsock);
+    close(clntsock); // Could this be closed earlier, as soon as the candlemessage is read?
     dealloccandlemsg(candlemsg);
   }
 
@@ -43,6 +46,10 @@ int main(int argc, char **argv) {
 
 int handlerequest(struct candlemsg *candlemsg) {
 
+  if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
+    userlogin(candlemsg->from);
+    return 0;
+  }
   
   return 0;
 }
