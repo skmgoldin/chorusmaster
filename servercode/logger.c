@@ -6,27 +6,28 @@
 
 struct candlemsg *candlelog(struct candlemsg *candlemsg) {
 
-  serverlog("==MESSAGE==\n");
+  writelog("==MESSAGE==\n");
 
   char *buf = malloc(sizeof(char) * MSGLEN * 2);
 
   sprintf(buf, "%s%s", "versionid: ", candlemsg->versionid);
-  serverlog(buf);
+  writelog(buf);
 
   sprintf(buf, "%s%s", "from: ", candlemsg->from);
-  serverlog(buf);
+  writelog(buf);
 
   sprintf(buf, "%s%s", "reqtype: ", candlemsg->reqtype);
-  serverlog(buf);
+  writelog(buf);
 
   sprintf(buf, "%s%s", "msg: ", candlemsg->msg);
-  serverlog(buf);
+  writelog(buf);
 
   free(buf);
   return candlemsg;
 }
 
-char *serverlog(char *msg) {
+
+char *writelog(char *msg) {
 
   printf("%s", msg);
 
