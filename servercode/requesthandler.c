@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 
     if(authenticate(candlemsg->from, candlemsg->msg)) {
       serverlog("User authenticated.");
-      handlerequest(clntsock);
+      handlerequest(candlemsg);
     }
     else { serverlog("User authentication failed."); }
 
@@ -41,7 +41,8 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-int handlerequest(clntsock) {
+int handlerequest(struct candlemsg *candlemsg) {
+
   
   return 0;
 }
