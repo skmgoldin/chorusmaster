@@ -13,26 +13,26 @@ struct candlemsg {
   char *msg;       //4096 chars
 };
 
-struct liveuserslist *addliveuser(char *username, struct liveuserslist
-                                  *liveusers); 
+struct userslist *adduser(char *username, struct userslist
+                                  *users); 
   
-struct liveusernode *initliveusernode(struct liveusernode *newnode,
+struct usernode *initusernode(struct usernode *newnode,
                                       char *username);
 
-struct liveuserslist *initliveuserslist(struct liveuserslist *liveusers);
+struct userslist *inituserslist(struct userslist *users);
 
-int deinitliveusernode(struct liveusernode node);
+int deinitusernode(struct usernode node);
 
-struct liveuserslist *rmvliveuser(char *username, struct liveuserslist
-                                  *liveusers);
+struct userslist *rmvuser(char *username, struct userslist
+                                  *users);
 
-struct liveuserslist {
-  struct liveusernode *head;
+struct userslist {
+  struct usernode *head;
 };
 
-struct liveusernode {
+struct usernode {
   char *username;
-  struct liveusernode *next;
+  struct usernode *next;
 };
 
 #endif

@@ -43,24 +43,24 @@ int dealloccandlemsg(struct candlemsg *candlemsg) {
   return 0;
 }
 
-struct liveuserslist *addliveuser(char *username, struct liveuserslist
-                                  *liveusers) {
+struct userlist *adduser(char *username, struct userlist
+                                  *users) {
   
-  struct liveusernode *currnode = liveusers->head;
+  struct usernode *currnode = users->head;
 
   while(currnode->next != NULL) {
     currnode = currnode->next;
   }
 
-  struct liveusernode *newnode = malloc(sizeof(struct liveusernode));
-  newnode = initliveusernode(newnode, username);
+  struct usernode *newnode = malloc(sizeof(struct usernode));
+  newnode = initusernode(newnode, username);
 
   currnode->next = newnode;
 
-  return liveuserslist;
+  return userlist;
 }
 
-int deinitliveusernode(struct liveusernode node) {
+int deinitusernode(struct usernode node) {
 
   free(node->username);
   free(node);
@@ -68,36 +68,36 @@ int deinitliveusernode(struct liveusernode node) {
   return 0;
 }
 
-struct liveuserslist *rmvliveuser(char *username, struct liveuserslist
-                                  *liveusers) {
+struct userlist *rmvuser(char *username, struct userlist
+                         *users) {
   
-  struct liveusernode *currnode = liveusers->head;
+  struct usernode *currnode = users->head;
 
   if(strcmp(currnode->username, username) == 0) {
-    struct liveusernode *newhead = currnode->next;
-    deinitliveusernode(currnode->username);
-    liveusers->head = newhead;
+    struct usernode *newhead = currnode->next;
+    deinitusernode(currnode->username);
+    users->head = newhead;
 
-    return liveuserslist;
+    return userlist;
   }
 
   while(currnode->next != NULL) {
 
     if(strcmp(currnode->next->username, username) == 0) {
-      struct liveusernode *newnext = currnode->next->next;
-      deinitliveusernode(currnode->next);
+      struct usernode *newnext = currnode->next->next;
+      deinitusernode(currnode->next);
       currnode->next = newnext;
 
-      return liveuserslist;
+      return userlist;
     }
 
     currnode = currnode->next;
   }
 
-  return liveuserslist;
+  return userlist;
 }
 
-struct liveusernode *initliveusernode(struct liveusernode *newnode, char *username) {
+struct usernode *initusernode(struct usernode *newnode, char *username) {
 
   newnode->username = malloc(sizeof(char) * FROMLEN);
   strcpy(newnode->username, username);
@@ -107,10 +107,10 @@ struct liveusernode *initliveusernode(struct liveusernode *newnode, char *userna
   return newnode;
 }
 
-struct liveuserslist *initliveuserslist(struct liveuserslist *liveusers) {
+struct userlist *inituserlist(struct userlist *users) {
 
-  liveusers->head = NULL;
+  users->head = NULL;
 
-  return liveusers;
+  return users;
 }
 
