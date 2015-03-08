@@ -13,12 +13,20 @@ struct candlemsg {
   char *msg;       //4096 chars
 };
 
-struct liveusers {
+struct liveuserslist *addliveuser(char *username, struct liveuserslist
+                                  *liveusers); 
+  
+struct liveusernode *initliveusernode(struct liveusernode *newnode,
+                                      char *username);
+
+struct liveuserslist *initliveuserslist(struct liveuserslist *liveusers);
+
+struct liveuserslist {
   struct liveusernode *head;
 };
 
 struct liveusernode {
-  struct clnt *user;
+  char *username;
   struct liveusernode *next;
 };
 

@@ -42,3 +42,38 @@ int dealloccandlemsg(struct candlemsg *candlemsg) {
 
   return 0;
 }
+
+struct liveuserslist *addliveuser(char *username, struct liveuserslist
+                                  *liveusers) {
+  
+  struct liveusernode *currnode = liveusers->head;
+
+  while(currnode->next != NULL) {
+    currnode = currnode->next;
+  }
+
+  struct liveusernode *newnode = malloc(sizeof(struct liveusernode));
+  newnode = initliveusernode(newnode, username);
+
+  currnode->next = newnode;
+
+  return liveuserslist;
+}
+
+struct liveusernode *initliveusernode(struct liveusernode *newnode, char *username) {
+
+  newnode->username = malloc(sizeof(char) * FROMLEN);
+  strcpy(newnode->username, username);
+
+  newnode->next = NULL;
+
+  return newnode;
+}
+
+struct liveuserslist *initliveuserslist(struct liveuserslist *liveusers) {
+
+  liveusers->head = NULL;
+
+  return liveusers;
+}
+
