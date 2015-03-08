@@ -1,7 +1,9 @@
 #ifndef USERSTATUS_H
 #define USERSTATUS_H
 
-char *userlogin(char *username);
+struct userlist *userlogin(char *username, struct userlist
+                                *userlist);
+
 
 #endif
 
