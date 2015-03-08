@@ -16,8 +16,6 @@ int authenticate(char *username, char *password) {
   char *teststring = malloc(sizeof(char) * MSGLEN);
   int i;
   for(i = 0; fgets(teststring, FROMLEN, credfile) != NULL; i++) {
-    printf("%s\n", teststring);
-    printf("%s%s\n", username, password);
     if(strcmp(username, teststring) == 0 && (i % 2) == 0) {
       if(strcmp(password, fgets(teststring, MSGLEN, credfile)) == 0) {
         free(teststring);
