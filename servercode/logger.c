@@ -9,5 +9,8 @@ struct candlemsg *candlelog(struct candlemsg *candlemsg) {
 }
 
 char *serverlog(char *msg) {
+
   printf("%s\n", msg);
+
+  return msg;
 }
