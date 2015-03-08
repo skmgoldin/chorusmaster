@@ -4,6 +4,7 @@
 #include "candleclient.h"
 #include "../sharedcode/datastructures.h"
 #include "../sharedcode/globalvalues.h"
+#include <string.h>
 
 int main(int argc, char **argv) {
 
@@ -26,20 +27,26 @@ int main(int argc, char **argv) {
 
 int login(int sock) {
 
+  char *versionid = malloc(sizeof(char) * VERSIONIDLEN);
   char *username = malloc(sizeof(char) * FROMLEN);
   char *msg = malloc(sizeof(char) * MSGLEN);
-  char *reqtype = "login";
+  char *reqtype = malloc(sizeof(char) * MSGLEN);
 
   printf("%s", "Username: ");
   fgets(username, FROMLEN, stdin);
   printf("%s", "Password: ");
   fgets(msg, MSGLEN, stdin);
 
-  struct candlemsg *candlemsg = alloccandlemsg("candlechat1.0", username,
+  strcpy(versionid, VERSIONID);
+  strcpy(reqtype, LOGIN);
+
+  struct candlemsg *candlemsg = alloccandlemsg(versionid, username,
                                                reqtype, msg);
 
+  free(versionid);
   free(username);
   free(msg);
+  free(reqtype);
 
   sendcandlemsg(candlemsg, sock);
 
