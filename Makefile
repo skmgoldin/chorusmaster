@@ -2,7 +2,7 @@ CC = gcc
 LD = gcc
 CFLAGS = -g -Wall
 LDFLAGS =
-SERVSRCS = requesthandler.c authenticate.c logger.c userstatus.c $(SHAREDSRCS)
+SERVSRCS = requesthandler.c authenticate.c logger.c $(SHAREDSRCS)
 CLNTSRCS = candleclient.c $(SHAREDSRCS)
 SHAREDSRCS = datastructures.c wireio.c servertools.c msgvalidation.c
 SERVOBJS = $(SERVSRCS:.c=.o)

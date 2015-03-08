@@ -11,7 +11,6 @@
 #include "logger.h"
 #include <string.h>
 #include "../sharedcode/globalvalues.h"
-#include "userstatus.h"
 
 int main(int argc, char **argv) {
 
