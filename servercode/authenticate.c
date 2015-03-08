@@ -2,6 +2,7 @@
 #include <string.h>
 #include "../sharedcode/globalvalues.h"
 #include <stdlib.h>
+#include <math.h>
 
 #define CREDFILE "servercode/credentials.txt"
 
@@ -13,17 +14,20 @@ int authenticate(char *username, char *password) {
     exit(1);
   }
 
-  char *teststring;
+  char *teststring = malloc(sizeof(char) * MSGLEN);
   int i;
   for(i = 0; *(teststring = fgets(teststring, FROMLEN, credfile)) != EOF; i++) {
     printf("%s\n", teststring);
     if(strcmp(username, teststring) && (i % 2) == 0) {
       if(strcmp(password, fgets(teststring, MSGLEN, credfile))) {
+        free(teststring);
+        fclose(credfile);
         return 1;
       }
     }
   }
   
+  free(teststring);
   fclose(credfile);
   return 0;
 }
