@@ -119,3 +119,30 @@ struct userlist *inituserlist(struct userlist *userlist) {
   return userlist;
 }
 
+int deinituserlist(struct userlist *userlist) {
+
+  if(userlist->head == NULL) {
+    return 0;
+  }
+
+  struct usernode *currnode = userlist->head;
+  deinitallnodes(currnode);
+
+  free(userlist);
+
+  return 0;
+}
+
+int deinitallnodes(struct usernode *currnode) {
+
+  if(currnode->next == NULL) {
+    free(currnode);
+    return 0;
+  }
+
+  deinitallnodes(currnode->next);
+  free(currnode);
+
+  return 0;
+}
+

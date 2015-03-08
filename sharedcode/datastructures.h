@@ -23,6 +23,10 @@ int deinitusernode(struct usernode *node);
 
 struct userlist *rmvuser(char *username, struct userlist *users);
 
+int deinituserlist(struct userlist *userlist);
+
+int deinitallnodes(struct usernode *currnode);
+
 struct userlist {
   struct usernode *head;
 };
