@@ -12,7 +12,8 @@ char *validatemsg(char *msg, int maxlen) {
       *(msg + (msglen + 1)) = '\0';
     }
     else {
-      *(msg + msglen) = '\n';
+      *(msg + msglen - 1) = '\n';
+      *(msg + msglen) = '\0';
     }
   }
 
