@@ -3,7 +3,7 @@
 #include "../sharedcode/globalvalues.h"
 #include <stdlib.h>
 
-#define CREDFILE "credentials.txt"
+#define CREDFILE "servercode/credentials.txt"
 
 int authenticate(char *username, char *password) {
   
