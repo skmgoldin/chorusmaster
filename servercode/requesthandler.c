@@ -23,6 +23,9 @@ int main(int argc, char **argv) {
   char *port = *(argv + 1);
   int sock = makeserver(port); 
 
+  struct liveuserlist *liveuserlist = malloc(sizeof(struct liveuserlist));
+  liveuserlist = initliveuserslist(liveuserlist);
+
   while(1) {
 
     int clntsock = getconnection(sock); // Update getconnection() to return struct sockdata.
