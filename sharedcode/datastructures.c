@@ -60,7 +60,13 @@ struct liveuserslist *addliveuser(char *username, struct liveuserslist
   return liveuserslist;
 }
 
-//struct liveuserslist *de
+struct liveusernode *deinitliveusernode(struct liveusernode node) {
+
+  free(node->username);
+
+  return node;
+}
+
 struct liveuserslist *rmvliveuser(char *username, struct liveuserslist
                                   *liveusers) {
   
