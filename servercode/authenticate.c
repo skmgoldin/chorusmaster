@@ -1,4 +1,5 @@
-int authenticate(struct candlemsg *candlemsg) {
+int authenticate(char *username, char *password) {
+  
   
   return 0;
   //Get uid.
