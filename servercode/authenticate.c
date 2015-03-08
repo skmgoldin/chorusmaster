@@ -2,12 +2,33 @@
 #include <string.h>
 #include "../sharedcode/globalvalues.h"
 #include <stdlib.h>
+#include "../sharedcode/datastructures.h"
+#include "authenticate.h"
 
 #define CREDFILE "servercode/credentials.txt"
 
-int authenticate(char *username, char *password) {
+int authenticate(struct candlemsg *candlemsg, struct userlist *userlist) {
+
+  if(finduser(candlemsg->from, userlist) != NULL) {
+    return 1;
+  }
+
+  else if(strcmp(candlemsg->reqtype, LOGIN) == 0) { 
+    if(login(candlemsg->from, candlemsg->msg)) {
+      adduser(candlemsg->from, userlist);
+      return 1;
+    }
+
+    return 0;
+  }
   
-  FILE *credfile = fopen(CREDFILE, "r");
+  return 0;
+}
+
+
+int login(char *username, char *password) {
+
+FILE *credfile = fopen(CREDFILE, "r");
   if(!credfile) {
     perror("File opening failed");
     exit(1);

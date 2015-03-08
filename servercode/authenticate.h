@@ -1,6 +1,8 @@
 #ifndef AUTHENTICATE_H
 #define AUTHENTICATE_H
 
-int authenticate(char *username, char *password);
+int authenticate(struct candlemsg *candlemsg, struct userlist *userlist);
+
+int login(char *username, char *password);
 
 #endif
