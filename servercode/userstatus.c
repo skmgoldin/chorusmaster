@@ -1,9 +1,9 @@
-#include "../sharedresources/datastructures.h"
+#include "../sharedcode/datastructures.h"
 
-struct liveuserslist *userlogin(char *username, struct liveuserslist
-                                *liveusers) {
+struct userlist *userlogin(char *username, struct userlist
+                                *userlist) {
 
-  liveuserslist = addliveuser(username, liveusers);
+  userlist = adduser(username, userlist);
 
-  return liveuserlist;
+  return userlist;
 }
