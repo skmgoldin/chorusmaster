@@ -27,26 +27,19 @@ int main(int argc, char **argv) {
 
 int login(int sock) {
 
-  char *versionid = malloc(sizeof(char) * VERSIONIDLEN);
   char *username = malloc(sizeof(char) * FROMLEN);
   char *msg = malloc(sizeof(char) * MSGLEN);
-  char *reqtype = malloc(sizeof(char) * MSGLEN);
 
   printf("%s", "Username: ");
   fgets(username, FROMLEN, stdin);
   printf("%s", "Password: ");
   fgets(msg, MSGLEN, stdin);
 
-  strcpy(versionid, VERSIONID);
-  strcpy(reqtype, LOGIN);
+  struct candlemsg *candlemsg = alloccandlemsg(VERSIONID, username,
+                                               LOGIN, msg);
 
-  struct candlemsg *candlemsg = alloccandlemsg(versionid, username,
-                                               reqtype, msg);
-
-  free(versionid);
   free(username);
   free(msg);
-  free(reqtype);
 
   sendcandlemsg(candlemsg, sock);
 
