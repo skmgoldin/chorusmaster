@@ -7,7 +7,7 @@
 #define REQTYPELEN 32
 #define MSGLEN 4096
 
-#define VERSIONID "candlechat1.0"
-#define LOGIN "login"
+#define VERSIONID "candlechat1.0\n"
+#define LOGIN "login\n"
 
 #endif
