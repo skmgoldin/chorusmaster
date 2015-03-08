@@ -21,6 +21,9 @@ struct liveusernode *initliveusernode(struct liveusernode *newnode,
 
 struct liveuserslist *initliveuserslist(struct liveuserslist *liveusers);
 
+struct liveuserslist *rmvliveuser(char *username, struct liveuserslist
+                                  *liveusers);
+
 struct liveuserslist {
   struct liveusernode *head;
 };

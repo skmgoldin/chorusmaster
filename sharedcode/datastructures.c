@@ -60,6 +60,38 @@ struct liveuserslist *addliveuser(char *username, struct liveuserslist
   return liveuserslist;
 }
 
+//struct liveuserslist *de
+struct liveuserslist *rmvliveuser(char *username, struct liveuserslist
+                                  *liveusers) {
+  
+  struct liveusernode *currnode = liveusers->head;
+
+  if(strcmp(currnode->username, username) == 0) {
+    struct liveusernode *newhead = currnode->next;
+    free(currnode->username);
+    free(currnode);
+    liveusers->head = newhead;
+
+    return liveuserslist;
+  }
+
+  while(currnode->next != NULL) {
+
+    if(strcmp(currnode->next->username, username) == 0) {
+      struct liveusernode *newnext = currnode->next->next;
+      free(currnode->next->username);
+      free(currnode->next);
+      currnode->next = newnext;
+
+      return liveuserslist;
+    }
+
+    currnode = currnode->next;
+  }
+
+  return liveuserslist;
+}
+
 struct liveusernode *initliveusernode(struct liveusernode *newnode, char *username) {
 
   newnode->username = malloc(sizeof(char) * FROMLEN);
