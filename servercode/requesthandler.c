@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
   char *port = *(argv + 1);
   int sock = makeserver(port); 
 
-  struct liveuserlist *liveuserlist = malloc(sizeof(struct liveuserslist));
-  liveuserlist = initliveuserslist(liveuserlist);
+  struct userlist *userlist = malloc(sizeof(struct userlist));
+  userlist = inituserlist(userlist);
 
   while(1) {
 
