@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
     if(authenticate(candlemsg, userlist, lockoutlist, conninfo)) {
       serverlog("User authenticated");
-      handlerequest(candlemsg, userlist);
+      handlerequest(candlemsg, userlist, conninfo);
     } else {
       serverlog("User authentication failed");
     }
@@ -54,9 +54,13 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist) {
+int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
+                  struct conninfo *conninfo) {
 
   if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
+    struct candlemsg *reply = alloccandlemsg();
+    reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD, "1\n");
+    sendcandlemsg(reply, conninfo->sock);
     return 0;
   }
   
