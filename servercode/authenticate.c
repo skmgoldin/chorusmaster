@@ -20,7 +20,11 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
 
   if(finduser(candlemsg->from, userlist) != NULL) {
     /* User is already authenticated. */
-    // Check if sockdata is different!
+    if(finduser(candlemsg->from, userlist)->ip != conninfo->ip) {
+      /* User is logging in from a new location, log out old location. */
+      rmvuser(candlemsg->from, userlist);
+      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, userlist);
+    }
     return 1;
   }
 
