@@ -1,7 +1,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-struct candlemsg *candlelog(struct candlemsg *candlemsg);
+#include "../sharedcode/conninfo.h"
+
+struct candlemsg *candlelog(struct candlemsg *candlemsg, struct conninfo *conninfo);
 
 char *writelog(char *msg);
 

@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
     struct candlemsg *candlemsg = readcandlemsg(conninfo->sock);
 
-    candlelog(candlemsg);
+    candlelog(candlemsg, conninfo);
 
     if(authenticate(candlemsg, userlist, lockoutlist, conninfo)) {
       serverlog("User authenticated");

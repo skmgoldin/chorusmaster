@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-struct candlemsg *candlelog(struct candlemsg *candlemsg) {
+struct candlemsg *candlelog(struct candlemsg *candlemsg, struct conninfo *conninfo) {
 
   serverlog("message");
 
@@ -17,6 +17,9 @@ struct candlemsg *candlelog(struct candlemsg *candlemsg) {
   sprintf(buf, "%s%s", "reqtype: ", candlemsg->reqtype);
   writelog(buf);
 
+  sprintf(buf, "%s%s", "stableport: ", candlemsg->stableport);
+  writelog(buf);
+
   sprintf(buf, "%s%s", "from: ", candlemsg->from);
   writelog(buf);
 
@@ -24,6 +27,17 @@ struct candlemsg *candlelog(struct candlemsg *candlemsg) {
   writelog(buf);
 
   sprintf(buf, "%s%s", "msg: ", candlemsg->msg);
+  writelog(buf);
+
+  serverlog("connection info");
+
+  sprintf(buf, "%s%d\n", "socket: ", conninfo->sock);
+  writelog(buf);
+
+  sprintf(buf, "%s%s\n", "ip: ", conninfo->ip);
+  writelog(buf);
+
+  sprintf(buf, "%s%s\n", "port: ", conninfo->port);
   writelog(buf);
 
   free(buf);
