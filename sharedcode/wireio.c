@@ -15,16 +15,20 @@ struct candlemsg *readcandlemsg(int clntsock) {
   char *versionid = malloc(sizeof(char) * VERSIONIDLEN);
   versionid = readfield(clntsock, versionid, VERSIONIDLEN);
 
+  char *reqtype = malloc(sizeof(char) * REQTYPELEN);
+  reqtype = readfield(clntsock, reqtype, REQTYPELEN);
+
   char *from = malloc(sizeof(char) * FROMLEN);
   from = readfield(clntsock, from, FROMLEN);
 
-  char *reqtype = malloc(sizeof(char) * REQTYPELEN);
-  reqtype = readfield(clntsock, reqtype, REQTYPELEN);
+  char *to = malloc(sizeof(char) * FROMLEN);
+  to = readfield(clntsock, to, TOLEN);
 
   char *msg = malloc(sizeof(char) * MSGLEN);
   msg = readfield(clntsock, msg, MSGLEN);
 
-  struct candlemsg *candlemsg = alloccandlemsg(versionid, from, reqtype, msg);
+  struct candlemsg *candlemsg = alloccandlemsg();
+  candlemsg = packcandlemsg(candlemsg, reqtype, from, to, msg);
 
   free(versionid);
   free(from);
@@ -68,8 +72,9 @@ int makeconnection(char *ip, char *port) {
 
 struct candlemsg *sendcandlemsg(struct candlemsg *candlemsg, int sock) {
   sendfield(sock, candlemsg->versionid, VERSIONIDLEN);
-  sendfield(sock, candlemsg->from, FROMLEN);
   sendfield(sock, candlemsg->reqtype, REQTYPELEN);
+  sendfield(sock, candlemsg->from, FROMLEN);
+  sendfield(sock, candlemsg->to, TOLEN);
   sendfield(sock, candlemsg->msg, MSGLEN);
 
   return candlemsg;
