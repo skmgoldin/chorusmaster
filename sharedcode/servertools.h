@@ -1,12 +1,6 @@
 #ifndef SERVERTOOLS_H
 #define SERVERTOOLS_H
 
-struct sockdata {
-  int sock;
-  struct addrinfo *servinfo;
-  struct addrinfo *hints;
-};
-
 int makeserver(char *port);
 
 struct sockdata *makesock(char *ip, char *port, struct sockdata *sockdata);
@@ -20,8 +14,5 @@ int getconnection(int sock);
 
 int freeport(int servsock);
 
-struct sockdata *allocsockdata();
-
-int deallocsockdata(struct sockdata *sockdata);
 
 #endif

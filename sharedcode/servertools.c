@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "servertools.h"
+#include "sockdata.h"
 
 #define BACKLOG 10
 
@@ -90,18 +91,4 @@ int freeport(int servsock) {
   return 1;
 }
 
-struct sockdata *allocsockdata() {
-  struct sockdata *sockdata = malloc(sizeof(struct sockdata));
-  sockdata->servinfo = NULL;
-  sockdata->hints = malloc(sizeof(struct addrinfo));
 
-  return sockdata;
-}
-
-int deallocsockdata(struct sockdata *sockdata) {
-  freeaddrinfo(sockdata->servinfo);
-  freeaddrinfo(sockdata->hints);
-  free(sockdata);
-
-  return 0;
-}
