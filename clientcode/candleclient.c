@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "../sharedcode/wireio.h"
 #include "candleclient.h"
-#include "../sharedcode/datastructures.h"
 #include "../sharedcode/globalvalues.h"
 #include <string.h>
 #include "../sharedcode/candlemsg.h"

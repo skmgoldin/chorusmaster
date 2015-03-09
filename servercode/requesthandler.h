@@ -1,7 +1,8 @@
 #ifndef REQUESTHANDLER_H
 #define REQUESTHANDLER_H
 
-#include "../sharedcode/datastructures.h"
+#include "../sharedcode/candlemsg.h"
+#include "../sharedcode/userlist.h"
 
 int main(int argc, char **argv);
 

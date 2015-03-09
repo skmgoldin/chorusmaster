@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include "requesthandler.h"
 #include "../sharedcode/wireio.h"
-#include "../sharedcode/datastructures.h"
+#include "../sharedcode/userlist.h"
 #include "authenticate.h"
 #include <unistd.h>
 #include "logger.h"

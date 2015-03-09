@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../sharedcode/datastructures.h"
+#include "../sharedcode/candlemsg.h"
 #include "logger.h"
 #include "../sharedcode/globalvalues.h"
 #include <stdlib.h>

@@ -2,7 +2,8 @@
 #include <string.h>
 #include "../sharedcode/globalvalues.h"
 #include <stdlib.h>
-#include "../sharedcode/datastructures.h"
+#include "../sharedcode/candlemsg.h"
+#include "../sharedcode/userlist.h"
 #include "authenticate.h"
 
 #define CREDFILE "servercode/credentials.txt"
