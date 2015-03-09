@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "datastructures.h"
 #include <string.h>
+#include "msgvalidation.h"
 
 struct candlemsg *alloccandlemsg() {
 
