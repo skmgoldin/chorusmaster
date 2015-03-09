@@ -20,13 +20,13 @@ int main(int argc, char **argv) {
   char *servip = *(argv + 1);
   char *servport = *(argv + 2);
 
-  //int servsock = makeserver(CANDLEPORT);    
+  int servsock = makeserver("4444");    
 
   login(servip, servport);
 
   while(1) {
 
-   // getconnection(servsock);
+    getconnection(servsock);
   }
   
   return 0;
@@ -49,9 +49,15 @@ int login(char *servip, char *servport) {
 
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
   dealloccandlemsg(candlemsg);
-  dealloccandlemsg(reply);
 
-  // Do something based on the reply
-  
+  if(atoi(reply->msg) == 1) {
+    dealloccandlemsg(reply);
+    return 0;
+  } else {
+    printf("%s\n", reply->msg);
+    dealloccandlemsg(reply);
+    return login(servip, servport);
+  }
+
   return 0;
 }
