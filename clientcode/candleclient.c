@@ -36,8 +36,8 @@ int login(int sock) {
   printf("%s", "Password: ");
   fgets(msg, MSGLEN, stdin);
 
-  struct candlemsg *candlemsg = alloccandlemsg(VERSIONID, username,
-                                               LOGIN, msg);
+  struct candlemsg *candlemsg = alloccandlemsg();
+  candlemsg = packcandlemsg(candlemsg, LOGIN, username, NULLFIELD, msg);
 
   free(username);
   free(msg);
