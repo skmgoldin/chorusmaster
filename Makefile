@@ -4,7 +4,7 @@ CFLAGS = -g -Wall
 LDFLAGS =
 SERVSRCS = requesthandler.c authenticate.c logger.c $(SHAREDSRCS)
 CLNTSRCS = candleclient.c $(SHAREDSRCS)
-SHAREDSRCS = wireio.c servertools.c msgvalidation.c candlemsg.c userlist.c
+SHAREDSRCS = wireio.c servertools.c msgvalidation.c candlemsg.c userlist.c conninfo.c sockdata.c
 SERVOBJS = $(SERVSRCS:.c=.o)
 CLNTOBJS = $(CLNTSRCS:.c=.o)
 SERVER = servercode/

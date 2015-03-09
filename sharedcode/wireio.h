@@ -11,4 +11,7 @@ struct candlemsg *sendcandlemsg(struct candlemsg *candlemsg, int sock);
 
 char *sendfield(int sock, char *field, int fieldsize);
 
+struct candlemsg *candleexchange(struct candlemsg *candlemsg, char *ip,
+                                 char *port);
+
 #endif

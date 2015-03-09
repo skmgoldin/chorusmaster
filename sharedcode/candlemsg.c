@@ -14,6 +14,9 @@ struct candlemsg *alloccandlemsg() {
   candlemsg->reqtype = malloc(sizeof(char) * REQTYPELEN);
   memset(candlemsg->reqtype, 0, REQTYPELEN);
 
+  candlemsg->stableport = malloc(sizeof(char) * PORTLEN);
+  memset(candlemsg->stableport, 0, PORTLEN);
+
   candlemsg->from = malloc(sizeof(char) * FROMLEN);
   memset(candlemsg->from, 0, FROMLEN);
 
@@ -27,12 +30,16 @@ struct candlemsg *alloccandlemsg() {
 }
 
 struct candlemsg *packcandlemsg(struct candlemsg *candlemsg, char *reqtype,
-                                char *from, char *to, char *msg) {
+                                char * stableport, char *from, char *to,
+                                char *msg) {
 
   strcpy(candlemsg->versionid, VERSIONID);
 
   reqtype = validatemsg(reqtype, REQTYPELEN);
   strcpy(candlemsg->reqtype, reqtype);
+
+  stableport = validatemsg(stableport, PORTLEN);
+  strcpy(candlemsg->stableport, stableport);
 
   from = validatemsg(from, FROMLEN);
   strcpy(candlemsg->from, from);
@@ -50,6 +57,7 @@ int dealloccandlemsg(struct candlemsg *candlemsg) {
 
   free(candlemsg->versionid);
   free(candlemsg->reqtype);
+  free(candlemsg->stableport);
   free(candlemsg->from);
   free(candlemsg->to);
   free(candlemsg->msg);

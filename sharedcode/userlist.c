@@ -3,11 +3,11 @@
 #include <string.h>
 #include "globalvalues.h"
 
-struct userlist *adduser(char *username, struct userlist
-                         *userlist) {
+struct userlist *adduser(char *username, char *ip, char *port,
+                         struct userlist *userlist) {
 
   struct usernode *newnode = malloc(sizeof(struct usernode));
-  newnode = initusernode(newnode, username);
+  newnode = initusernode(newnode, username, ip, port);
 
   if(userlist->head == NULL) {
     userlist->head = newnode;
@@ -28,6 +28,8 @@ struct userlist *adduser(char *username, struct userlist
 int deinitusernode(struct usernode *node) {
 
   free(node->username);
+  free(node->ip);
+  free(node->port);
   free(node);
 
   return 0;
@@ -61,10 +63,17 @@ struct userlist *rmvuser(char *username, struct userlist *userlist) {
   return userlist;
 }
 
-struct usernode *initusernode(struct usernode *newnode, char *username) {
+struct usernode *initusernode(struct usernode *newnode, char *username,
+                              char *ip, char *port) {
 
   newnode->username = malloc(sizeof(char) * FROMLEN);
   strcpy(newnode->username, username);
+
+  newnode->ip = malloc(sizeof(char) * IPLEN);
+  strcpy(newnode->ip, ip);
+ 
+  newnode->port = malloc(sizeof(char) * PORTLEN);
+  strcpy(newnode->port, port);
 
   newnode->next = NULL;
 
@@ -80,9 +89,10 @@ struct userlist *inituserlist(struct userlist *userlist) {
 
 int deinituserlist(struct userlist *userlist) {
 
-if(userlist->head == NULL) {
-  return 0;
-}
+  if(userlist->head == NULL) {
+    free(userlist);
+    return 0;
+  }
 
   struct usernode *currnode = userlist->head;
   deinitallnodes(currnode);

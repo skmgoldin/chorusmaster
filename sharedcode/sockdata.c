@@ -1,7 +1,11 @@
 #include <stdlib.h>
+#include "sockdata.h"
+#include <netdb.h>
 
 struct sockdata *allocsockdata() {
+
   struct sockdata *sockdata = malloc(sizeof(struct sockdata));
+
   sockdata->servinfo = NULL;
   sockdata->hints = malloc(sizeof(struct addrinfo));
 

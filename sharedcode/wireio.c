@@ -8,6 +8,8 @@
 #include "servertools.h"
 #include "globalvalues.h"
 #include "candlemsg.h"
+#include "sockdata.h"
+#include <unistd.h>
 
 struct candlemsg *readcandlemsg(int clntsock) {
 
@@ -16,6 +18,9 @@ struct candlemsg *readcandlemsg(int clntsock) {
 
   char *reqtype = malloc(sizeof(char) * REQTYPELEN);
   reqtype = readfield(clntsock, reqtype, REQTYPELEN);
+
+  char *stableport = malloc(sizeof(char) * PORTLEN);
+  stableport = readfield(clntsock, stableport, PORTLEN);
 
   char *from = malloc(sizeof(char) * FROMLEN);
   from = readfield(clntsock, from, FROMLEN);
@@ -27,10 +32,11 @@ struct candlemsg *readcandlemsg(int clntsock) {
   msg = readfield(clntsock, msg, MSGLEN);
 
   struct candlemsg *candlemsg = alloccandlemsg();
-  candlemsg = packcandlemsg(candlemsg, reqtype, from, to, msg);
+  candlemsg = packcandlemsg(candlemsg, reqtype, stableport, from, to, msg);
 
   free(versionid);
   free(reqtype);
+  free(stableport);
   free(from);
   free(to);
   free(msg);
@@ -73,6 +79,7 @@ int makeconnection(char *ip, char *port) {
 struct candlemsg *sendcandlemsg(struct candlemsg *candlemsg, int sock) {
   sendfield(sock, candlemsg->versionid, VERSIONIDLEN);
   sendfield(sock, candlemsg->reqtype, REQTYPELEN);
+  sendfield(sock, candlemsg->stableport, PORTLEN);
   sendfield(sock, candlemsg->from, FROMLEN);
   sendfield(sock, candlemsg->to, TOLEN);
   sendfield(sock, candlemsg->msg, MSGLEN);
@@ -86,3 +93,20 @@ char *sendfield(int sock, char *field, int fieldsize) {
 
   return field;
 }
+
+struct candlemsg *candleexchange(struct candlemsg *candlemsg, char *ip,
+                                 char *port) {
+
+  int sock = makeconnection(ip, port);
+
+  sendcandlemsg(candlemsg, sock);
+
+  struct candlemsg *reply = alloccandlemsg();
+
+  reply = readcandlemsg(sock);
+
+  close(sock);
+
+  return reply;
+}
+

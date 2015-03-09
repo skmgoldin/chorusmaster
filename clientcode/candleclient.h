@@ -1,2 +1,2 @@
 
-int login(int sock);
+int login(char *servip, char *servport);

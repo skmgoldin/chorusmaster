@@ -7,12 +7,17 @@ struct userlist {
 
 struct usernode {
   char *username;
+  char *ip;
+  char *port;
+  int missedcheckins;
   struct usernode *next;
 };
 
-struct userlist *adduser(char *username, struct userlist *users); 
-  
-struct usernode *initusernode(struct usernode *newnode, char *username);
+struct userlist *adduser(char *username, char *ip, char *port,
+                         struct userlist *userlist);
+
+struct usernode *initusernode(struct usernode *newnode, char *username,
+                              char *ip, char *port);
 
 struct userlist *inituserlist(struct userlist *users);
 

@@ -12,6 +12,8 @@
 #include <string.h>
 #include "../sharedcode/globalvalues.h"
 #include "../sharedcode/candlemsg.h"
+#include "../sharedcode/sockdata.h"
+#include "../sharedcode/conninfo.h"
 
 int main(int argc, char **argv) {
 
@@ -26,22 +28,25 @@ int main(int argc, char **argv) {
   struct userlist *userlist = malloc(sizeof(struct userlist));
   userlist = inituserlist(userlist);
 
+  struct userlist *lockoutlist = malloc(sizeof(struct userlist));
+  lockoutlist = inituserlist(lockoutlist);
+
   while(1) {
 
-    int clntsock = getconnection(sock); // Update getconnection() to return struct sockdata.
+    struct conninfo *conninfo = getconnection(sock); 
 
-    struct candlemsg *candlemsg = readcandlemsg(clntsock);
+    struct candlemsg *candlemsg = readcandlemsg(conninfo->sock);
 
     candlelog(candlemsg);
 
-    if(authenticate(candlemsg, userlist)) {
+    if(authenticate(candlemsg, userlist, lockoutlist, conninfo)) {
       serverlog("User authenticated");
       handlerequest(candlemsg, userlist);
     } else {
       serverlog("User authentication failed");
     }
 
-    close(clntsock); // Could this be closed earlier, as soon as the candlemessage is read?
+    deallocconninfo(conninfo);
     dealloccandlemsg(candlemsg);
   }
 

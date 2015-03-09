@@ -7,13 +7,14 @@
 #include "authenticate.h"
 #include "../sharedcode/sockdata.h"
 #include "../sharedcode/wireio.h"
+#include "../sharedcode/conninfo.h"
 
 #define CREDFILE "servercode/credentials.txt"
 #define TRIES 3
 #define LOCKOUTTIME 60
 
 int authenticate(struct candlemsg *candlemsg, struct userlist *userlist, 
-                 struct userlist *lockoutlist, struct sockdata *sockdata) {
+                 struct userlist *lockoutlist, struct conninfo *conninfo) {
 
   if(finduser(candlemsg->from, userlist) != NULL) {
     /* User is already authenticated. */
@@ -25,8 +26,8 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
     /* User is currently locked out. */
     struct candlemsg *outmsg = alloccandlemsg();
     char *msg = "You are locked out. Try again later.";
-    outmsg = packcandlemsg(outmsg, LOCKOUT, NULLFIELD, candlemsg->from, msg); 
-    sendcandlemsg(outmsg, sockdata->sock);
+    outmsg = packcandlemsg(outmsg, LOCKOUT, NULLFIELD, NULLFIELD, candlemsg->from, msg); 
+    sendcandlemsg(outmsg, conninfo->sock);
     return 0;
   }
 
@@ -35,7 +36,7 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
 
     if(login(candlemsg->from, candlemsg->msg)) {
       /* Login was successful, add user to userlist and authenticate. */
-      adduser(candlemsg->from, sockdata, userlist);
+      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, userlist);
       return 1;
     }
 
@@ -44,7 +45,7 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
     for(i = 0; i < TRIES - 1; i++) {
       if(login(candlemsg->from, candlemsg->msg)) {
         /* Login was successful, add user to userlist and authenticate. */
-        adduser(candlemsg->from, userlist);
+        adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, userlist);
         return 1;
       }
     }

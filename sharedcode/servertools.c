@@ -6,6 +6,7 @@
 #include <string.h>
 #include "servertools.h"
 #include "sockdata.h"
+#include "conninfo.h"
 
 #define BACKLOG 10
 
@@ -45,6 +46,22 @@ struct sockdata *makesock(char *ip, char *port, struct sockdata *sockdata) {
   return sockdata;
 }
 
+struct conninfo *getconnection(int sock) {
+
+  int backlog = BACKLOG;
+  struct sockaddr_storage clntaddr;
+  socklen_t clntaddrsize = sizeof(struct sockaddr_storage);
+
+  struct conninfo *conninfo = allocconninfo();
+
+  listen(sock, backlog);
+
+  int clntsock = accept(sock, (struct sockaddr *) &clntaddr, &clntaddrsize);
+  conninfo = initconninfo(conninfo, clntsock, (struct sockaddr *) &clntaddr);
+  
+  return conninfo;
+}
+
 struct addrinfo * gethints(int fam, int socktype, int flags,
                            struct addrinfo *hints) {
 
@@ -68,17 +85,7 @@ int getsock(int domain, int type, int protocol) {
   return sock;
 }
 
-int getconnection(int sock) {
 
-  int backlog = BACKLOG;
-  struct sockaddr_storage *clntaddr = NULL;
-  socklen_t clntaddrsize = sizeof(struct sockaddr_storage);
-
-  listen(sock, backlog);
-  int clntsock = accept(sock, (struct sockaddr *) clntaddr, &clntaddrsize);
-
-  return clntsock;
-}
 
 int freeport(int servsock) {
 
