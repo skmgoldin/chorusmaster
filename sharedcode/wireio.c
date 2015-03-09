@@ -31,8 +31,9 @@ struct candlemsg *readcandlemsg(int clntsock) {
   candlemsg = packcandlemsg(candlemsg, reqtype, from, to, msg);
 
   free(versionid);
-  free(from);
   free(reqtype);
+  free(from);
+  free(to);
   free(msg);
 
   return candlemsg;
