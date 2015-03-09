@@ -2,10 +2,11 @@
 #define DATASTRUCTURES_H
 
 struct candlemsg {
-  char *versionid; //32 chars
-  char *from;    //32 chars
-  char *reqtype;   //32 chars
-  char *msg;       //4096 chars
+  char *versionid; 
+  char *reqtype;   
+  char *from;   
+  char *to;
+  char *msg;     
 };
 
 struct userlist *adduser(char *username, struct userlist *users); 
