@@ -4,7 +4,8 @@
 #include "../sharedcode/conninfo.h"
 
 int authenticate(struct candlemsg *candlemsg, struct userlist *userlist, 
-                 struct userlist *lockoutlist, struct conninfo *conninfo);
+                 struct userlist *loginlist, struct userlist *lockoutlist,
+                 struct conninfo *conninfo);
 
 int login(char *username, char *password);
 
