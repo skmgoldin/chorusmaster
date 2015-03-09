@@ -11,6 +11,7 @@
 #include "logger.h"
 #include <string.h>
 #include "../sharedcode/globalvalues.h"
+#include "../sharedcode/candlemsg.h"
 
 int main(int argc, char **argv) {
 

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "servertools.h"
 #include "globalvalues.h"
+#include "candlemsg.h"
 
 struct candlemsg *readcandlemsg(int clntsock) {
 
