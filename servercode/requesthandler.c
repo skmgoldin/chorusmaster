@@ -14,9 +14,19 @@
 #include "../sharedcode/candlemsg.h"
 #include "../sharedcode/sockdata.h"
 #include "../sharedcode/conninfo.h"
+#include <signal.h>
+
+static int run = 1;
+
+void sighandler() {
+  run = 0; 
+  exit(0);
+}
 
 int main(int argc, char **argv) {
 
+  signal(SIGINT, sighandler);
+   
   if(*(argv + 1) == NULL) {
     printf("%s\n", "Run again with a port number, please.");
     exit(1);
@@ -31,7 +41,7 @@ int main(int argc, char **argv) {
   struct userlist *lockoutlist = malloc(sizeof(struct userlist));
   lockoutlist = inituserlist(lockoutlist);
 
-  while(1) {
+  while(run) {
 
     struct conninfo *conninfo = getconnection(sock); 
 
@@ -51,6 +61,7 @@ int main(int argc, char **argv) {
   }
 
   deinituserlist(userlist);
+  deinituserlist(lockoutlist);
   return 0;
 }
 
@@ -61,6 +72,7 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     struct candlemsg *reply = alloccandlemsg();
     reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD, "1\n");
     sendcandlemsg(reply, conninfo->sock);
+    dealloccandlemsg(reply);
     return 0;
   }
   
