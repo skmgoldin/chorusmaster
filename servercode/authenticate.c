@@ -6,10 +6,11 @@
 #include "../sharedcode/userlist.h"
 #include "authenticate.h"
 #include "../sharedcode/sockdata.h"
+#include "../sharedcode/wireio.h"
 
 #define CREDFILE "servercode/credentials.txt"
 #define TRIES 3
-#define LOCKOUT 60
+#define LOCKOUTTIME 60
 
 int authenticate(struct candlemsg *candlemsg, struct userlist *userlist, 
                  struct userlist *lockoutlist, struct sockdata *sockdata) {
