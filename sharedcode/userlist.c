@@ -1,14 +1,11 @@
-#include "datastructures.h"
 #include <stdlib.h>
+#include "userlist.h"
 #include <string.h>
 #include "globalvalues.h"
-#include "msgvalidation.h"
-
-
 
 struct userlist *adduser(char *username, struct userlist
-                                  *userlist) {
-  
+                         *userlist) {
+
   struct usernode *newnode = malloc(sizeof(struct usernode));
   newnode = initusernode(newnode, username);
 
@@ -36,9 +33,8 @@ int deinitusernode(struct usernode *node) {
   return 0;
 }
 
-struct userlist *rmvuser(char *username, struct userlist
-                         *userlist) {
-  
+struct userlist *rmvuser(char *username, struct userlist *userlist) {
+
   struct usernode *currnode = userlist->head;
 
   if(strcmp(currnode->username, username) == 0) {
@@ -84,9 +80,9 @@ struct userlist *inituserlist(struct userlist *userlist) {
 
 int deinituserlist(struct userlist *userlist) {
 
-  if(userlist->head == NULL) {
-    return 0;
-  }
+if(userlist->head == NULL) {
+  return 0;
+}
 
   struct usernode *currnode = userlist->head;
   deinitallnodes(currnode);
