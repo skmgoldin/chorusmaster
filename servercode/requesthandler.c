@@ -37,10 +37,8 @@ int main(int argc, char **argv) {
     if(authenticate(candlemsg, userlist)) {
       serverlog("User authenticated");
       handlerequest(candlemsg, userlist);
-    }
-    else {
+    } else {
       serverlog("User authentication failed");
-      //send login signal
     }
 
     close(clntsock); // Could this be closed earlier, as soon as the candlemessage is read?
