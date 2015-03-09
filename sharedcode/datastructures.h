@@ -1,11 +1,6 @@
 #ifndef DATASTRUCTURES_H
 #define DATASTRUCTURES_H
 
-struct candlemsg *alloccandlemsg(char *versionid, char *from, char *reqtype,
-                                 char *msg);
-
-int dealloccandlemsg(struct candlemsg *candlemsg);
-
 struct candlemsg {
   char *versionid; //32 chars
   char *from;    //32 chars
