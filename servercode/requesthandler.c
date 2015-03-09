@@ -38,6 +38,9 @@ int main(int argc, char **argv) {
   struct userlist *userlist = malloc(sizeof(struct userlist));
   userlist = inituserlist(userlist);
 
+  struct userlist *loginlist = malloc(sizeof(struct userlist));
+  loginlist = inituserlist(loginlist);
+
   struct userlist *lockoutlist = malloc(sizeof(struct userlist));
   lockoutlist = inituserlist(lockoutlist);
 
@@ -49,11 +52,12 @@ int main(int argc, char **argv) {
 
     candlelog(candlemsg, conninfo);
 
-    if(authenticate(candlemsg, userlist, lockoutlist, conninfo)) {
+    if(authenticate(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
       serverlog("User authenticated");
       handlerequest(candlemsg, userlist, conninfo);
     } else {
       serverlog("User authentication failed");
+
     }
 
     deallocconninfo(conninfo);
