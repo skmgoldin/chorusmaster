@@ -75,6 +75,8 @@ struct usernode *initusernode(struct usernode *newnode, char *username,
   newnode->port = malloc(sizeof(char) * PORTLEN);
   strcpy(newnode->port, port);
 
+  newnode->missedcheckins = 0;
+
   newnode->next = NULL;
 
   return newnode;
