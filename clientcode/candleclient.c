@@ -5,6 +5,7 @@
 #include "../sharedcode/datastructures.h"
 #include "../sharedcode/globalvalues.h"
 #include <string.h>
+#include "../sharedcode/candlemsg.h"
 
 int main(int argc, char **argv) {
 
