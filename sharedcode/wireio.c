@@ -101,9 +101,7 @@ struct candlemsg *candleexchange(struct candlemsg *candlemsg, char *ip,
 
   sendcandlemsg(candlemsg, sock);
 
-  struct candlemsg *reply = alloccandlemsg();
-
-  reply = readcandlemsg(sock);
+  struct candlemsg *reply = readcandlemsg(sock);
 
   close(sock);
 
