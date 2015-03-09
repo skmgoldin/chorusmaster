@@ -1,5 +1,8 @@
 #include "candlemsg.h"
 #include "globalvalues.h"
+#include <stdlib.h>
+#include "datastructures.h"
+#include <string.h>
 
 struct candlemsg *alloccandlemsg() {
 
@@ -53,5 +56,5 @@ int dealloccandlemsg(struct candlemsg *candlemsg) {
 
   free(candlemsg);
 
-return 0;
+  return 0;
 }
