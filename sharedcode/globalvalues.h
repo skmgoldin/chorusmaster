@@ -10,5 +10,6 @@
 #define VERSIONID "candlechat1.0\n"
 #define LOGIN "login\n"
 #define NULLFIELD "\n"
+#define LOCKOUT "lockout\n"
 
 #endif
