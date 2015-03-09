@@ -14,10 +14,13 @@ struct candlemsg *candlelog(struct candlemsg *candlemsg) {
   sprintf(buf, "%s%s", "versionid: ", candlemsg->versionid);
   writelog(buf);
 
+  sprintf(buf, "%s%s", "reqtype: ", candlemsg->reqtype);
+  writelog(buf);
+
   sprintf(buf, "%s%s", "from: ", candlemsg->from);
   writelog(buf);
 
-  sprintf(buf, "%s%s", "reqtype: ", candlemsg->reqtype);
+  sprintf(buf, "%s%s", "to: ", candlemsg->to);
   writelog(buf);
 
   sprintf(buf, "%s%s", "msg: ", candlemsg->msg);
