@@ -57,7 +57,6 @@ int main(int argc, char **argv) {
       handlerequest(candlemsg, userlist, conninfo);
     } else {
       serverlog("User authentication failed");
-
     }
 
     deallocconninfo(conninfo);
