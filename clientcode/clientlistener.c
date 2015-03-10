@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include "../sharedcode/servertools.h"
+#include "../sharedcode/wireio.h"
+#include "../sharedcode/conninfo.h"
+#include "../sharedcode/candlemsg.h"
 
 int main(int argc, char **argv) {
 
@@ -7,9 +10,15 @@ int main(int argc, char **argv) {
 
   int servsock = makeserver(listenport);    
 
-  printf("%s\n", "I'm clientlistener.");
   while(1) {
-    getconnection(servsock);
+    struct conninfo *conninfo = getconnection(servsock);
+
+    struct candlemsg *candlemsg = readcandlemsg(conninfo->sock);
+
+    printf("%s\n", candlemsg->msg);
+
+    deallocconninfo(conninfo);
+    dealloccandlemsg(candlemsg);
   }
 
   return 0;
