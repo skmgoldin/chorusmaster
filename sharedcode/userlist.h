@@ -9,7 +9,7 @@ struct usernode {
   char *username;
   char *ip;
   char *port;
-  int missedcheckins;
+  time_t lastcheckin;
   struct usernode *next;
 };
 

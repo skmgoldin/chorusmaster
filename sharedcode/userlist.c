@@ -2,6 +2,7 @@
 #include "userlist.h"
 #include <string.h>
 #include "globalvalues.h"
+#include <time.h>
 
 struct userlist *adduser(char *username, char *ip, char *port,
                          struct userlist *userlist) {
@@ -75,7 +76,7 @@ struct usernode *initusernode(struct usernode *newnode, char *username,
   newnode->port = malloc(sizeof(char) * PORTLEN);
   strcpy(newnode->port, port);
 
-  newnode->missedcheckins = 0;
+  newnode->lastcheckin = time(NULL);
 
   newnode->next = NULL;
 
