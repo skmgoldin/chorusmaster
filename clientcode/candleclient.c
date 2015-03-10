@@ -17,6 +17,7 @@ static char *username;
 
 void siginthandler() {
   logout(servip, servport);
+  free(username);
   exit(1);
 }
 
@@ -27,7 +28,6 @@ int logout(char *servip, char *servport) {
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
   dealloccandlemsg(candlemsg);
   dealloccandlemsg(reply);
-
   return 0;
 }
 
@@ -73,16 +73,13 @@ int inputhandler(char *servip, char *servport) {
 
   while(1) {
     fgets(input, MSGLEN, stdin);
-    if((int) *(input) == SIGINT) {
-      free(input);
-      printf("%s\n", "Quitting.");
-      exit(1);
-    }
     printf("%s\n", input);
 
     memset(input, '0', MSGLEN); // Probably unnecessary
      
   }
+
+  free(input);
 }
 
 int login(char *servip, char *servport) {
