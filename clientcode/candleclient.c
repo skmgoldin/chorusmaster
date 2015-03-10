@@ -44,8 +44,6 @@ int main(int argc, char **argv) {
   servip = *(argv + 1);
   servport = *(argv + 2);
 
-  login(servip, servport);
-
   showrunner(servip, servport); 
   
   return 0;
@@ -60,6 +58,7 @@ int showrunner(char *servip, char *servport) {
     execl("./clientlistener", "./clientlistener", "4444", NULL); //Get an arbitrary port!
   } else if(pid > 0) {
     /* Parent process */
+    login(servip, servport);
     inputhandler(servip, servport);
   }
 

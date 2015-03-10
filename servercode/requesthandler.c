@@ -82,7 +82,6 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     sendcandlemsg(reply, conninfo->sock);
     dealloccandlemsg(reply);
 
-    sleep(1);
     char *buf = malloc(sizeof(char) * MSGLEN);
     sprintf(buf, "%s%s", candlemsg->from, " logged in!");
     broadcast(buf, userlist);
