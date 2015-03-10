@@ -27,6 +27,10 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
     return 0;
   }
 
+  if(alreadyauthenticated(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
+    return 1;
+  }
+
   if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
     return 1;
   }
@@ -108,14 +112,14 @@ int lockedout(struct candlemsg *candlemsg, struct userlist *userlist,
                             "You are locked out. Try again later.\n"); 
       sendcandlemsg(reply, conninfo->sock);
       dealloccandlemsg(reply);
-      return 0;
+      return 1;
     } else {
       /* Lockout period expired. */
       rmvuser(candlemsg->from, lockoutlist);
       if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
-        return 1;
-      } else {
         return 0;
+      } else {
+        return 1;
       }
     }
   }
