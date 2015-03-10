@@ -78,7 +78,7 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
 
   if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
     struct candlemsg *reply = alloccandlemsg();
-    reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD, "1\n");
+    reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD, "1");
     sendcandlemsg(reply, conninfo->sock);
     dealloccandlemsg(reply);
 
