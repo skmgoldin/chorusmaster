@@ -15,5 +15,6 @@
 #define NULLFIELD "\n"
 #define LOCKOUT "lockout\n"
 #define LOGOUT "logout\n"
+#define MSG "msg\n"
 
 #endif
