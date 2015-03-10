@@ -92,6 +92,11 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
   
   if(strcmp(candlemsg->reqtype, LOGOUT) == 0) {
     rmvuser(candlemsg->from, userlist);
+
+    char *buf = malloc(sizeof(char) * MSGLEN);
+    sprintf(buf, "%s%s", candlemsg->from, " logged out!");
+    broadcast(buf, userlist);
+
     return 0;
   }
  
