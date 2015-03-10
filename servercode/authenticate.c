@@ -144,6 +144,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
                             "This account has been logged in at a new location. "
                             "Logging this location out."); 
         dealloccandlemsg(candleexchange(msg, olduser->ip, olduser->port));
+        dealloccandlemsg(msg);
 
         rmvuser(olduser->username, userlist);
       }
