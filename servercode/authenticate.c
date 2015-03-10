@@ -51,11 +51,11 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
     if(finduser(candlemsg->from, loginlist) == NULL) {
       adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, loginlist);
       struct usernode *user = finduser(candlemsg->from, loginlist);
-      user->missedcheckins++;
+      user->util++;
     } else {
       struct usernode *user = finduser(candlemsg->from, loginlist);
-      user->missedcheckins++;
-      if(user->missedcheckins >= TRIES) {
+      user->util++;
+      if(user->util >= TRIES) {
         adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, lockoutlist);
         rmvuser(candlemsg->from, loginlist);
 
