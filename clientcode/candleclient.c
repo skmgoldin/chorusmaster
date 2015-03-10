@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 #include "../sharedcode/sockdata.h"
 #include <sys/socket.h>
+#include <netdb.h>
 
 //#define CANDLEPORT "4444" // I need to get an arbitrary port from the system.
 
@@ -64,6 +65,7 @@ int main(int argc, char **argv) {
 
   char *mysock = malloc(sizeof(char) * IPLEN);   
   sprintf(mysock, "%d", servsock);
+  free(servinfo);
   showrunner(servip, servport, mysock); 
   
   return 0;
