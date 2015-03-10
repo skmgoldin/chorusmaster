@@ -6,10 +6,34 @@
 #include <string.h>
 #include "../sharedcode/candlemsg.h"
 #include "../sharedcode/servertools.h"
+#include <unistd.h>
+#include <signal.h>
 
-#define CANDLEPORT "4444\n"
+#define CANDLEPORT "4444\n" // I need to get an arbitrary port from the system.
+
+static char *servip;
+static char *servport;
+static char *username;
+
+void siginthandler() {
+  logout(servip, servport);
+  exit(1);
+}
+
+int logout(char *servip, char *servport) {
+
+  struct candlemsg *candlemsg = alloccandlemsg();
+  candlemsg = packcandlemsg(candlemsg, LOGOUT, NULLFIELD, username, NULLFIELD, NULLFIELD);
+  struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
+  dealloccandlemsg(candlemsg);
+  dealloccandlemsg(reply);
+
+  return 0;
+}
 
 int main(int argc, char **argv) {
+
+  signal(SIGINT, siginthandler);
 
   if(*(argv + 1) == NULL || *(argv + 2) == NULL) {
     printf("%s\n", "Run again with an ip address and port number to connect "
@@ -17,44 +41,76 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  char *servip = *(argv + 1);
-  char *servport = *(argv + 2);
-
-  int servsock = makeserver("4444");    
+  servip = *(argv + 1);
+  servport = *(argv + 2);
 
   login(servip, servport);
 
-  while(1) {
-
-    getconnection(servsock);
-  }
+  showrunner(servip, servport); 
   
   return 0;
 }
 
+int showrunner(char *servip, char *servport) {
+
+  pid_t pid = fork();
+
+  if(pid == 0) {
+    /* Child process */
+    execl("./clientlistener", "./clientlistener", "4444", NULL); //Get an arbitrary port!
+  } else if(pid > 0) {
+    /* Parent process */
+    inputhandler(servip, servport);
+  }
+
+  // Kill the clientlistener and message the server to say bye
+  return 0;
+}
+
+int inputhandler(char *servip, char *servport) {
+
+  char *input = malloc(sizeof(char) * MSGLEN);
+
+  while(1) {
+    fgets(input, MSGLEN, stdin);
+    if((int) *(input) == SIGINT) {
+      free(input);
+      printf("%s\n", "Quitting.");
+      exit(1);
+    }
+    printf("%s\n", input);
+
+    memset(input, '0', MSGLEN); // Probably unnecessary
+     
+  }
+}
+
 int login(char *servip, char *servport) {
 
-  char *username = malloc(sizeof(char) * FROMLEN);
+  char *usernamebuf = malloc(sizeof(char) * FROMLEN);
   char *msg = malloc(sizeof(char) * MSGLEN);
 
   printf("%s", "Username: ");
-  fgets(username, FROMLEN, stdin);
+  fgets(usernamebuf, FROMLEN, stdin);
   printf("%s", "Password: ");
   fgets(msg, MSGLEN, stdin);
 
   struct candlemsg *candlemsg = alloccandlemsg();
-  candlemsg = packcandlemsg(candlemsg, LOGIN, CANDLEPORT, username, NULLFIELD, msg);
-  free(username);
+  candlemsg = packcandlemsg(candlemsg, LOGIN, CANDLEPORT, usernamebuf, NULLFIELD, msg); //Get an arbitrary port!
   free(msg);
 
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
   dealloccandlemsg(candlemsg);
 
   if(atoi(reply->msg) == 1) {
+    username = malloc(sizeof(char) * FROMLEN);
+    strcpy(username, usernamebuf);
+    free(usernamebuf);
     dealloccandlemsg(reply);
     return 0;
   } else {
     printf("%s\n", reply->msg);
+    free(usernamebuf);
     dealloccandlemsg(reply);
     return login(servip, servport);
   }
