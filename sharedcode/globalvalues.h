@@ -14,5 +14,6 @@
 #define LOGIN "login\n"
 #define NULLFIELD "\n"
 #define LOCKOUT "lockout\n"
+#define LOGOUT "logout\n"
 
 #endif
