@@ -1,6 +1,8 @@
 #ifndef USERLIST_H
 #define USERLIST_H
 
+#include <time.h>
+
 struct userlist {
   struct usernode *head;
 };
