@@ -75,7 +75,6 @@ struct usernode *initusernode(struct usernode *newnode, char *username,
  
   newnode->port = malloc(sizeof(char) * PORTLEN);
   strcpy(newnode->port, port);
-  *(newnode->port + strlen(port) - 1) = '\0';
 
   newnode->lastcheckin = time(NULL);
   
