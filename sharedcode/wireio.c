@@ -50,7 +50,12 @@ char *readfield(int clntsock, char *field, int fieldsize) {
   int len = fieldsize;
   int flags = 0;
 
-  recv(clntsock, buf, len, flags);
+  if(recv(clntsock, buf, len, flags) == 0) {
+    free(buf);
+    buf = NULLFIELD;  
+    strcpy(field, buf);
+    return field;
+  }
 
   strcpy(field, buf);
 
