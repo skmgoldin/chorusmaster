@@ -31,13 +31,13 @@ struct candlemsg *candlelog(struct candlemsg *candlemsg, struct conninfo *connin
 
   serverlog("connection info");
 
-  sprintf(buf, "%s%d\n", "socket: ", conninfo->sock);
+  sprintf(buf, "%s%d", "socket: ", conninfo->sock);
   writelog(buf);
 
-  sprintf(buf, "%s%s\n", "ip: ", conninfo->ip);
+  sprintf(buf, "%s%s", "ip: ", conninfo->ip);
   writelog(buf);
 
-  sprintf(buf, "%s%s\n", "port: ", conninfo->port);
+  sprintf(buf, "%s%s", "port: ", conninfo->port);
   writelog(buf);
 
   free(buf);
@@ -48,7 +48,7 @@ char *serverlog(char *msg) {
 
   char *buf = malloc(sizeof(char) * MSGLEN * 2);
 
-  sprintf(buf, "%s%s%s\n", "==", msg, "==");
+  sprintf(buf, "%s%s%s", "==", msg, "==");
 
   int i;
   for(i = 0; *(buf + i) != '\0'; i++) {
@@ -64,7 +64,7 @@ char *serverlog(char *msg) {
 
 char *writelog(char *msg) {
 
-  printf("%s", msg);
+  printf("%s\n", msg);
 
   return msg;
 }
