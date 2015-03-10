@@ -10,11 +10,11 @@
 
 #define IPLEN 128
 
-#define VERSIONID "candlechat1.0\n"
-#define LOGIN "login\n"
-#define NULLFIELD "\n"
-#define LOCKOUT "lockout\n"
-#define LOGOUT "logout\n"
-#define MSG "msg\n"
+#define VERSIONID "candlechat1.0"
+#define LOGIN "login"
+#define NULLFIELD "NULL"
+#define LOCKOUT "lockout"
+#define LOGOUT "logout"
+#define MSG "msg"
 
 #endif
