@@ -9,6 +9,7 @@
 #include "../sharedcode/wireio.h"
 #include "../sharedcode/conninfo.h"
 #include "logger.h"
+#include <time.h>
 
 #define CREDFILE "servercode/credentials.txt"
 #define TRIES 3
@@ -18,71 +19,22 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
                  struct userlist *loginlist, struct userlist *lockoutlist,
                  struct conninfo *conninfo) {
 
-  if(finduser(candlemsg->from, userlist) != NULL) {
-    /* User is already authenticated. */
-    if(finduser(candlemsg->from, userlist)->ip != conninfo->ip) {
-      /* User is logging in from a new location, log out old location. */
-      rmvuser(candlemsg->from, userlist);
-      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, userlist);
-    }
+  if(alreadyauthenticated(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
     return 1;
   }
 
-  if(finduser(candlemsg->from, lockoutlist) != NULL) {
-    /* User is currently locked out. */
-    struct candlemsg *reply = alloccandlemsg();
-    reply = packcandlemsg(reply, LOCKOUT, NULLFIELD, NULLFIELD, candlemsg->from,
-                          "You are locked out. Try again later.\n"); 
-    sendcandlemsg(reply, conninfo->sock);
-    dealloccandlemsg(reply);
+  if(lockedout(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
     return 0;
   }
 
-  else if(strcmp(candlemsg->reqtype, LOGIN) == 0) { 
-    /* User is requesting to login. They get TRIES attempts. */
-
-    if(login(candlemsg->from, candlemsg->msg)) {
-      /* Login was successful, add user to userlist and authenticate. */
-      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, userlist);
-      return 1;
-    }
-
-    /* Login failed, request try again. */
-    if(finduser(candlemsg->from, loginlist) == NULL) {
-      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, loginlist);
-      struct usernode *user = finduser(candlemsg->from, loginlist);
-      user->util++;
-    } else {
-      struct usernode *user = finduser(candlemsg->from, loginlist);
-      user->util++;
-      if(user->util >= TRIES) {
-        adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, lockoutlist);
-        rmvuser(candlemsg->from, loginlist);
-
-        struct candlemsg *reply = alloccandlemsg();
-        reply = packcandlemsg(reply, LOCKOUT, NULLFIELD, NULLFIELD, candlemsg->from,
-                              "You are locked out. Try again later.\n"); 
-        sendcandlemsg(reply, conninfo->sock);
-        dealloccandlemsg(reply);
-        return 0;
-      }
-    }
-
-    struct candlemsg *reply = alloccandlemsg();
-    reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD,
-                          "Incorrect username or password.\n");
-    sendcandlemsg(reply, conninfo->sock);
-    dealloccandlemsg(reply);
-
-    /* Login was not successful. User is added to lockout list. */
-    // Add user to lockout list.
-    return 0;
+  if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
+    return 1;
   }
-  
-  /* User is not authenticated */
+
   return 0;
 }
 
+  
 
 int login(char *username, char *password) {
 
@@ -108,5 +60,116 @@ FILE *credfile = fopen(CREDFILE, "r");
 
   free(teststring);
   fclose(credfile);
+  return 0;
+}
+
+int alreadyauthenticated(struct candlemsg *candlemsg, struct userlist *userlist, 
+                         struct userlist *loginlist, struct userlist *lockoutlist,
+                         struct conninfo *conninfo) {
+
+  struct usernode *user = finduser(candlemsg->from, userlist);
+  if(user != NULL) {
+    /* User is already authenticated. */
+    if(user->ip != conninfo->ip) {
+      /* User is logging in from a new location, re-authenticate. */
+      if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
+
+        /* Login successful, log out old location. */
+        struct candlemsg *reply = alloccandlemsg();
+        reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, candlemsg->from,
+                              "This account has been logged in at a new location. "
+                              "Logging this location out.\n"); 
+        sendcandlemsg(reply, conninfo->sock); // Need old users conninfo
+        dealloccandlemsg(reply);
+
+        rmvuser(candlemsg->from, userlist); // This will just remove the newly authenticated user.
+        return 1;
+      }
+    }
+    /* User is authenticated and logging in from familiar location. */
+    //update checkin? No, do that at the return location.
+    return 1;
+  }
+
+  /* User is not already authenticated. */
+  return 0;
+}
+
+int lockedout(struct candlemsg *candlemsg, struct userlist *userlist, 
+              struct userlist *loginlist, struct userlist *lockoutlist,
+              struct conninfo *conninfo) { 
+
+  struct usernode *user = finduser(candlemsg->from, lockoutlist);
+  if(user != NULL) {
+    /* User is currently locked out. */
+    if(difftime(time(NULL), user->lastcheckin) < LOCKOUTTIME) {
+      struct candlemsg *reply = alloccandlemsg();
+      reply = packcandlemsg(reply, LOCKOUT, NULLFIELD, NULLFIELD, candlemsg->from,
+                            "You are locked out. Try again later.\n"); 
+      sendcandlemsg(reply, conninfo->sock);
+      dealloccandlemsg(reply);
+      return 0;
+    } else {
+      /* Lockout period expired. */
+      rmvuser(candlemsg->from, lockoutlist);
+      if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  /* User is not currently locked out. */
+  return 0;
+}
+
+int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist, 
+                 struct userlist *loginlist, struct userlist *lockoutlist,
+                 struct conninfo *conninfo) {
+
+  if(strcmp(candlemsg->reqtype, LOGIN) == 0) { 
+    /* User is requesting to login. They get TRIES attempts. */
+
+    if(login(candlemsg->from, candlemsg->msg)) {
+      /* Login was successful, add user to userlist and authenticate. */
+      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, userlist);
+      return 1;
+    }
+
+    /* Login failed, request try again. */
+    if(finduser(candlemsg->from, loginlist) == NULL) {
+      /* If user isn't on loginlist, add them and increment util. */
+      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, loginlist);
+      struct usernode *user = finduser(candlemsg->from, loginlist);
+      user->util++;
+    } else {
+      /* User is already on loginlist, increment util. */
+      struct usernode *user = finduser(candlemsg->from, loginlist);
+      user->util++;
+      if(user->util >= TRIES) {
+        /* TRIES consecutive login failures. Lock user out. */
+        adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, lockoutlist);
+        rmvuser(candlemsg->from, loginlist);
+
+        struct candlemsg *reply = alloccandlemsg();
+        reply = packcandlemsg(reply, LOCKOUT, NULLFIELD, NULLFIELD, candlemsg->from,
+                              "You are locked out. Try again later.\n"); 
+        sendcandlemsg(reply, conninfo->sock);
+        dealloccandlemsg(reply);
+        return 0;
+      }
+    }
+
+    struct candlemsg *reply = alloccandlemsg();
+    reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD,
+                          "Incorrect username or password.\n");
+    sendcandlemsg(reply, conninfo->sock);
+    dealloccandlemsg(reply);
+
+    return 0;
+  }
+
+  /* Non-login reqtype */
   return 0;
 }
