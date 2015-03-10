@@ -77,21 +77,10 @@ int alreadyauthenticated(struct candlemsg *candlemsg, struct userlist *userlist,
     if(user->ip != conninfo->ip) {
       /* User is logging in from a new location, re-authenticate. */
       if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
-        /* Login successful, log out old location. */
-
-        struct candlemsg *reply = alloccandlemsg();
-        reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, candlemsg->from,
-                              "This account has been logged in at a new location. "
-                              "Logging this location out.\n"); 
-        sendcandlemsg(reply, conninfo->sock); // Need old users conninfo
-        dealloccandlemsg(reply);
-
-        rmvuser(candlemsg->from, userlist); // This will just remove the newly authenticated user.
         return 1;
       }
     }
     /* User is authenticated and logging in from familiar location. */
-    //update checkin? No, do that at the return location.
     return 1;
   }
 
@@ -136,7 +125,21 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
     /* User is requesting to login. They get TRIES attempts. */
 
     if(login(candlemsg->from, candlemsg->msg)) {
-      /* Login was successful, add user to userlist and authenticate. */
+      /* Login was successful. */
+
+      if(finduser(candlemsg->from, userlist) != NULL) {
+        /* If user was previously logged in from a different location, log them out. */
+        struct usernode *olduser = finduser(candlemsg->from, userlist);
+
+        struct candlemsg *msg = alloccandlemsg();
+        msg = packcandlemsg(msg, LOGIN, NULLFIELD, NULLFIELD, olduser->username,
+                            "This account has been logged in at a new location. "
+                            "Logging this location out.\n"); 
+        dealloccandlemsg(candleexchange(msg, olduser->ip, olduser->port));
+
+        rmvuser(olduser->username, userlist);
+      }
+
       adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, userlist);
       return 1;
     }
