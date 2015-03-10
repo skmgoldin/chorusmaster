@@ -16,6 +16,7 @@
 #include "../sharedcode/conninfo.h"
 #include <signal.h>
 #include <time.h>
+#include "messagerouting.h"
 
 static int run = 1;
 
@@ -80,6 +81,13 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD, "1\n");
     sendcandlemsg(reply, conninfo->sock);
     dealloccandlemsg(reply);
+
+    sleep(3);
+
+    char *buf = malloc(sizeof(char) * MSGLEN);
+    sprintf(buf, "%s%s", candlemsg->from, " logged in!");
+    broadcast(buf, userlist);
+
     return 0;
   }
   
@@ -90,5 +98,4 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
  
   return 0;
 }
-
 
