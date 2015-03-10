@@ -77,8 +77,8 @@ int alreadyauthenticated(struct candlemsg *candlemsg, struct userlist *userlist,
     if(user->ip != conninfo->ip) {
       /* User is logging in from a new location, re-authenticate. */
       if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
-
         /* Login successful, log out old location. */
+
         struct candlemsg *reply = alloccandlemsg();
         reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, candlemsg->from,
                               "This account has been logged in at a new location. "
