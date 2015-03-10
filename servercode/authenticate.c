@@ -10,6 +10,7 @@
 #include "../sharedcode/conninfo.h"
 #include "logger.h"
 #include <time.h>
+#include "../sharedcode/msgvalidation.h"
 
 #define CREDFILE "servercode/credentials.txt"
 #define TRIES 3
@@ -51,8 +52,11 @@ FILE *credfile = fopen(CREDFILE, "r");
   char *teststring = malloc(sizeof(char) * MSGLEN);
   int i;
   for(i = 0; fgets(teststring, FROMLEN, credfile) != NULL; i++) {
+    teststring = validatemsg(teststring, FROMLEN);
     if(strcmp(username, teststring) == 0 && (i % 2) == 0) {
-      if(strcmp(password, fgets(teststring, MSGLEN, credfile)) == 0) {
+      fgets(teststring, MSGLEN, credfile);
+      teststring = validatemsg(teststring, MSGLEN);
+      if(strcmp(password, teststring) == 0) {
         free(teststring);
         fclose(credfile);
         return 1;
@@ -71,14 +75,10 @@ int alreadyauthenticated(struct candlemsg *candlemsg, struct userlist *userlist,
                          struct userlist *loginlist, struct userlist *lockoutlist,
                          struct conninfo *conninfo) {
 
-  serverlog("1");
   struct usernode *user = finduser(candlemsg->from, userlist);
   if(user != NULL) {
     /* User is already authenticated. */
     if(strcmp(user->ip, conninfo->ip) != 0) {
-      serverlog(user->ip);
-      serverlog(conninfo->ip);
-      serverlog("ip mismatch");
       /* User is logging in from a new location, re-authenticate. */
       if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
         return 1;
@@ -96,7 +96,6 @@ int lockedout(struct candlemsg *candlemsg, struct userlist *userlist,
               struct userlist *loginlist, struct userlist *lockoutlist,
               struct conninfo *conninfo) { 
 
-  serverlog("2");
   struct usernode *user = finduser(candlemsg->from, lockoutlist);
   if(user != NULL) {
     /* User is currently locked out. */
@@ -126,7 +125,6 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
                  struct userlist *loginlist, struct userlist *lockoutlist,
                  struct conninfo *conninfo) {
 
-  serverlog("3");
   if(strcmp(candlemsg->reqtype, LOGIN) == 0) { 
     /* User is requesting to login. They get TRIES attempts. */
 
@@ -140,7 +138,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
         struct candlemsg *msg = alloccandlemsg();
         msg = packcandlemsg(msg, LOGIN, NULLFIELD, NULLFIELD, olduser->username,
                             "This account has been logged in at a new location. "
-                            "Logging this location out.\n"); 
+                            "Logging this location out."); 
         dealloccandlemsg(candleexchange(msg, olduser->ip, olduser->port));
 
         rmvuser(olduser->username, userlist);
@@ -167,7 +165,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
 
         struct candlemsg *reply = alloccandlemsg();
         reply = packcandlemsg(reply, LOCKOUT, NULLFIELD, NULLFIELD, candlemsg->from,
-                              "You are locked out. Try again later.\n"); 
+                              "You are locked out. Try again later."); 
         sendcandlemsg(reply, conninfo->sock);
         dealloccandlemsg(reply);
         return 0;
@@ -176,7 +174,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
 
     struct candlemsg *reply = alloccandlemsg();
     reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD,
-                          "Incorrect username or password.\n");
+                          "Incorrect username or password.");
     sendcandlemsg(reply, conninfo->sock);
     dealloccandlemsg(reply);
 
@@ -186,7 +184,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
   /* Non-login reqtype */
   struct candlemsg *reply = alloccandlemsg();
   reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD,
-                        "You are not logged in.\n");
+                        "You are not logged in.");
   sendcandlemsg(reply, conninfo->sock);
   dealloccandlemsg(reply);
 
