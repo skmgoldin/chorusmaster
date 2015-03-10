@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-#define CANDLEPORT "4444\n" // I need to get an arbitrary port from the system.
+#define CANDLEPORT "4444" // I need to get an arbitrary port from the system.
 
 static char *servip;
 static char *servport;
