@@ -71,10 +71,14 @@ int alreadyauthenticated(struct candlemsg *candlemsg, struct userlist *userlist,
                          struct userlist *loginlist, struct userlist *lockoutlist,
                          struct conninfo *conninfo) {
 
+  serverlog("1");
   struct usernode *user = finduser(candlemsg->from, userlist);
   if(user != NULL) {
     /* User is already authenticated. */
-    if(user->ip != conninfo->ip) {
+    if(strcmp(user->ip, conninfo->ip) != 0) {
+      serverlog(user->ip);
+      serverlog(conninfo->ip);
+      serverlog("ip mismatch");
       /* User is logging in from a new location, re-authenticate. */
       if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
         return 1;
@@ -92,6 +96,7 @@ int lockedout(struct candlemsg *candlemsg, struct userlist *userlist,
               struct userlist *loginlist, struct userlist *lockoutlist,
               struct conninfo *conninfo) { 
 
+  serverlog("2");
   struct usernode *user = finduser(candlemsg->from, lockoutlist);
   if(user != NULL) {
     /* User is currently locked out. */
@@ -121,6 +126,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
                  struct userlist *loginlist, struct userlist *lockoutlist,
                  struct conninfo *conninfo) {
 
+  serverlog("3");
   if(strcmp(candlemsg->reqtype, LOGIN) == 0) { 
     /* User is requesting to login. They get TRIES attempts. */
 
@@ -178,5 +184,11 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
   }
 
   /* Non-login reqtype */
+  struct candlemsg *reply = alloccandlemsg();
+  reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD,
+                        "You are not logged in.\n");
+  sendcandlemsg(reply, conninfo->sock);
+  dealloccandlemsg(reply);
+
   return 0;
 }
