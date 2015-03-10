@@ -3,12 +3,11 @@
 #include "../sharedcode/wireio.h"
 #include "../sharedcode/conninfo.h"
 #include "../sharedcode/candlemsg.h"
+#include <stdlib.h>
 
 int main(int argc, char **argv) {
 
-  char *listenport = *(argv + 1);
-
-  int servsock = makeserver(listenport);    
+  int servsock = atoi(*(argv + 1));
 
   while(1) {
     struct conninfo *conninfo = getconnection(servsock);

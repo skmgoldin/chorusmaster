@@ -8,12 +8,16 @@
 #include "../sharedcode/servertools.h"
 #include <unistd.h>
 #include <signal.h>
+#include <arpa/inet.h>
+#include "../sharedcode/sockdata.h"
+#include <sys/socket.h>
 
-#define CANDLEPORT "4444" // I need to get an arbitrary port from the system.
+//#define CANDLEPORT "4444" // I need to get an arbitrary port from the system.
 
 static char *servip;
 static char *servport;
 static char *username;
+static char *listenport;
 
 void siginthandler() {
   logout(servip, servport);
@@ -44,18 +48,34 @@ int main(int argc, char **argv) {
   servip = *(argv + 1);
   servport = *(argv + 2);
 
-  showrunner(servip, servport); 
+  int servsock = makeserver("0");
+
+  struct sockaddr *servinfo = malloc(sizeof(struct sockaddr));
+  socklen_t addrlen = sizeof(struct sockaddr);
+  memset(servinfo, '0', sizeof(struct sockaddr));
+  getsockname(servsock, servinfo, &addrlen);
+
+  char *myport = malloc(sizeof(char) * IPLEN);   
+  sprintf(myport, "%d", ntohs(((struct sockaddr_in *) servinfo)->sin_port)); 
+  listenport = malloc(sizeof(char) * PORTLEN);
+  strcpy(listenport, myport);
+  printf("%s\n", listenport);
+  free(myport);
+
+  char *mysock = malloc(sizeof(char) * IPLEN);   
+  sprintf(mysock, "%d", servsock);
+  showrunner(servip, servport, mysock); 
   
   return 0;
 }
 
-int showrunner(char *servip, char *servport) {
+int showrunner(char *servip, char *servport, char *mysock) {
 
   pid_t pid = fork();
 
   if(pid == 0) {
     /* Child process */
-    execl("./clientlistener", "./clientlistener", "4444", NULL); //Get an arbitrary port!
+    execl("./clientlistener", "./clientlistener", mysock, NULL); //Get an arbitrary port!
   } else if(pid > 0) {
     /* Parent process */
     login(servip, servport);
@@ -92,7 +112,7 @@ int login(char *servip, char *servport) {
   fgets(msg, MSGLEN, stdin);
 
   struct candlemsg *candlemsg = alloccandlemsg();
-  candlemsg = packcandlemsg(candlemsg, LOGIN, CANDLEPORT, usernamebuf, NULLFIELD, msg); //Get an arbitrary port!
+  candlemsg = packcandlemsg(candlemsg, LOGIN, listenport, usernamebuf, NULLFIELD, msg); //Get an arbitrary port!
   free(msg);
 
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
