@@ -83,6 +83,11 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     return 0;
   }
   
+  if(strcmp(candlemsg->reqtype, LOGOUT) == 0) {
+    rmvuser(candlemsg->from, userlist);
+    return 0;
+  }
+ 
   return 0;
 }
 
