@@ -77,6 +77,8 @@ struct usernode *initusernode(struct usernode *newnode, char *username,
   strcpy(newnode->port, port);
 
   newnode->lastcheckin = time(NULL);
+  
+  newnode->util = 0;
 
   newnode->next = NULL;
 

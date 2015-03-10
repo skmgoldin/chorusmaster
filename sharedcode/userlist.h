@@ -10,6 +10,7 @@ struct usernode {
   char *ip;
   char *port;
   time_t lastcheckin;
+  int util;
   struct usernode *next;
 };
 
