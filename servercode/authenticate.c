@@ -19,6 +19,13 @@
 int authenticate(struct candlemsg *candlemsg, struct userlist *userlist, 
                  struct userlist *loginlist, struct userlist *lockoutlist,
                  struct conninfo *conninfo) {
+  
+  if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
+    if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
+      return 1;
+    }
+    return 0;
+  }
 
   if(alreadyauthenticated(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
     return 1;
@@ -32,9 +39,6 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
     return 1;
   }
 
-  if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
-    return 1;
-  }
 
   return 0;
 }
