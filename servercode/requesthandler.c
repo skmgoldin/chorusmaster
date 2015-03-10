@@ -15,6 +15,7 @@
 #include "../sharedcode/sockdata.h"
 #include "../sharedcode/conninfo.h"
 #include <signal.h>
+#include <time.h>
 
 static int run = 1;
 
@@ -70,6 +71,9 @@ int main(int argc, char **argv) {
 
 int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
                   struct conninfo *conninfo) {
+
+  /* Check user in. */
+  finduser(candlemsg->from, userlist)->lastcheckin = time(NULL);
 
   if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
     struct candlemsg *reply = alloccandlemsg();
