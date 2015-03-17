@@ -73,14 +73,11 @@ int main(int argc, char **argv) {
 int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
                   struct conninfo *conninfo) {
 
-  /* Check user in. */
-  finduser(candlemsg->from, userlist)->lastcheckin = time(NULL);
 
   if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
-    struct candlemsg *reply = alloccandlemsg();
-    reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD, "1");
-    sendcandlemsg(reply, conninfo->sock);
-    dealloccandlemsg(reply);
+
+    /* Check user in. */
+    findusername(candlemsg->from, userlist)->lastcheckin = time(NULL);
 
     char *buf = malloc(sizeof(char) * MSGLEN);
     sprintf(buf, "%s%s", candlemsg->from, " logged in!");
@@ -90,17 +87,16 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
   }
   
   if(strcmp(candlemsg->reqtype, LOGOUT) == 0) {
-  //  struct usernode *user = finduser(candlemsg->from, userlist);
-    /* This is suspect. */
-  //  if(user->ip != conninfo->ip) {
-  //    return 0;
-  //  }
 
-    rmvuser(candlemsg->from, userlist);
+    char *username = malloc(sizeof(char) * FROMLEN);
+    username = strcpy(username, (findusid(candlemsg->from, userlist))->username);
+
+    rmvusid(candlemsg->from, userlist);
 
     char *buf = malloc(sizeof(char) * MSGLEN);
-    sprintf(buf, "%s%s", candlemsg->from, " logged out!");
+    sprintf(buf, "%s%s", username, " logged out!");
     broadcast(buf, userlist);
+    free(username);
 
     return 0;
   }
