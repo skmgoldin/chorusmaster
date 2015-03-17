@@ -90,6 +90,12 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
   }
   
   if(strcmp(candlemsg->reqtype, LOGOUT) == 0) {
+  //  struct usernode *user = finduser(candlemsg->from, userlist);
+    /* This is suspect. */
+  //  if(user->ip != conninfo->ip) {
+  //    return 0;
+  //  }
+
     rmvuser(candlemsg->from, userlist);
 
     char *buf = malloc(sizeof(char) * MSGLEN);
