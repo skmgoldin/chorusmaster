@@ -140,7 +140,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
         struct usernode *olduser = finduser(candlemsg->from, userlist);
 
         struct candlemsg *msg = alloccandlemsg();
-        msg = packcandlemsg(msg, LOGIN, NULLFIELD, NULLFIELD, olduser->username,
+        msg = packcandlemsg(msg, LOGOUT, NULLFIELD, NULLFIELD, olduser->username,
                             "This account has been logged in at a new location. "
                             "Logging this location out."); 
         dealloccandlemsg(candleexchange(msg, olduser->ip, olduser->port));
