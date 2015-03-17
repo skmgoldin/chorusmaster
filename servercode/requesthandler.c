@@ -94,6 +94,35 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     char *buf = malloc(sizeof(char) * MSGLEN);
     sprintf(buf, "%s%s%s", findusid(candlemsg->from, userlist)->username, ": ", candlemsg->msg);
     broadcast(buf, userlist);
+
+    return 0;
+  }
+
+  if(strcmp(candlemsg->reqtype, MESSAGE) == 0) {
+   
+    /* Check user in. */
+    findusid(candlemsg->from, userlist)->lastcheckin = time(NULL);
+
+    int i;                                                                        
+    for(i = 0; *(candlemsg->msg + i) != ' '; i++) {;}                                      
+    char *deliverto = malloc(sizeof(char) * (i + 1));                               
+    strncpy(deliverto, candlemsg->msg, i);                                                   
+    *(deliverto + i) = '\0'; 
+
+    struct usernode *delivernode = findusername(deliverto, userlist);
+
+    char *buf = malloc(sizeof(char) * MSGLEN);
+    sprintf(buf, "%s%s%s%s%s", findusid(candlemsg->from, userlist)->username, " (to  ", delivernode->username, "): ", candlemsg->msg + i + 1);
+
+    struct candlemsg *message = alloccandlemsg();
+    message = packcandlemsg(message, NULLFIELD, NULLFIELD, NULLFIELD, NULLFIELD, buf);
+    
+    dealloccandlemsg(candleexchange(message, delivernode->ip, delivernode->port));
+    dealloccandlemsg(message);
+
+    free(buf);
+    free(deliverto);
+    return 0;
   }
 
   if(strcmp(candlemsg->reqtype, LOGOUT) == 0) {

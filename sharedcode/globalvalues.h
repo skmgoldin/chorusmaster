@@ -21,5 +21,6 @@
 #define NEWUSID "newusid"
 
 #define BROADCAST "broadcast"
+#define MESSAGE "message"
 
 #endif
