@@ -20,4 +20,11 @@ int lockedout(struct candlemsg *candlemsg, struct userlist *userlist,
 int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist, 
                  struct userlist *loginlist, struct userlist *lockoutlist,
                  struct conninfo *conninfo);
+
+int sendauthfail(char *msg, int sock);
+
+int sendnewusid(char *msg, int sock);
+
+char *makeusid(struct candlemsg *candlemsg);
+
 #endif

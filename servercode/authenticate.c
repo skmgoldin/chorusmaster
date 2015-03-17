@@ -32,7 +32,7 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
     return 1;
   }
 
-  // Send AUTHFAIL
+  sendauthfail("Authentication failed.", conninfo->sock);
   
   return 0;
 }
@@ -50,10 +50,10 @@ FILE *credfile = fopen(CREDFILE, "r");
   char *teststring = malloc(sizeof(char) * MSGLEN);
   int i;
   for(i = 0; fgets(teststring, FROMLEN, credfile) != NULL; i++) {
-    teststring = validatemsg(teststring, FROMLEN);
+    teststring = validatemsg(teststring);
     if(strcmp(username, teststring) == 0 && (i % 2) == 0) {
       fgets(teststring, MSGLEN, credfile);
-      teststring = validatemsg(teststring, MSGLEN);
+      teststring = validatemsg(teststring);
       if(strcmp(password, teststring) == 0) {
         free(teststring);
         fclose(credfile);
@@ -88,19 +88,15 @@ int lockedout(struct candlemsg *candlemsg, struct userlist *userlist,
               struct userlist *loginlist, struct userlist *lockoutlist,
               struct conninfo *conninfo) { 
 
-  struct usernode *username = finduser(candlemsg->from, lockoutlist);
+  struct usernode *user = findusername(candlemsg->from, lockoutlist);
   if(user != NULL) {
     /* User is currently locked out. */
     if(difftime(time(NULL), user->lastcheckin) < LOCKOUTTIME) {
-      struct candlemsg *reply = alloccandlemsg();
-      reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, candlemsg->from,
-                            "You are locked out. Try again later."); 
-      sendcandlemsg(reply, conninfo->sock);
-      dealloccandlemsg(reply);
+      sendauthfail("You are locked out. Try again later.", conninfo->sock);
       return 1;
     } else {
       /* Lockout period expired. */
-      rmvuser(candlemsg->from, lockoutlist);
+      rmvusername(candlemsg->from, lockoutlist);
       return 0;
     }
   }
@@ -119,63 +115,89 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
     if(login(candlemsg->from, candlemsg->msg)) {
       /* Login was successful. */
 
-      if(finduser(candlemsg->from, userlist) != NULL) {
+      if(findusername(candlemsg->from, userlist) != NULL) {
         /* If user was previously logged in from a different location, log them out. */
-        struct usernode *olduser = finduser(candlemsg->from, userlist);
+        struct usernode *olduser = findusername(candlemsg->from, userlist);
 
-        struct candlemsg *msg = alloccandlemsg();
-        msg = packcandlemsg(msg, LOGOUT, NULLFIELD, NULLFIELD, olduser->username,
-                            "This account has been logged in at a new location. "
-                            "Logging this location out."); 
-        dealloccandlemsg(candleexchange(msg, olduser->ip, olduser->port));
-        dealloccandlemsg(msg);
-
-        rmvuser(olduser->username, userlist);
+        rmvusername(olduser->username, userlist);
       }
-
-      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, userlist);
+      
+      char *usid = makeusid(candlemsg);
+      adduser(candlemsg->from, usid, conninfo->ip, candlemsg->stableport, userlist);
+      sendnewusid(usid, conninfo->sock);
+      free(usid);
       return 1;
     }
 
     /* Login failed. */
-    if(finduser(candlemsg->from, loginlist) == NULL) {
+    if(findusername(candlemsg->from, loginlist) == NULL) {
       /* If user isn't on loginlist, add them and increment util. */
-      adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, loginlist);
-      struct usernode *user = finduser(candlemsg->from, loginlist);
+      adduser(candlemsg->from, NULLFIELD, conninfo->ip, candlemsg->stableport, loginlist);
+      struct usernode *user = findusername(candlemsg->from, loginlist);
       user->util++;
     } else {
       /* User is already on loginlist, increment util. */
-      struct usernode *user = finduser(candlemsg->from, loginlist);
+      struct usernode *user = findusername(candlemsg->from, loginlist);
       user->util++;
       if(user->util >= TRIES) {
         /* TRIES consecutive login failures. Lock user out. */
-        adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, lockoutlist);
-        rmvuser(candlemsg->from, loginlist);
+        adduser(candlemsg->from, NULLFIELD, conninfo->ip, candlemsg->stableport, lockoutlist);
+        rmvusername(candlemsg->from, loginlist);
 
-        struct candlemsg *reply = alloccandlemsg();
-        reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, candlemsg->from,
-                              "You are locked out. Try again later."); 
-        sendcandlemsg(reply, conninfo->sock);
-        dealloccandlemsg(reply);
+        sendauthfail("You are locked out. Try again later.", conninfo->sock);
         return 0;
       }
     }
 
-    struct candlemsg *reply = alloccandlemsg();
-    reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, NULLFIELD,
-                          "Incorrect username or password.");
-    sendcandlemsg(reply, conninfo->sock);
-    dealloccandlemsg(reply);
-
+    sendauthfail("Incorrect username or password", conninfo->sock);
     return 0;
   }
 
   /* Non-login reqtype */
+  sendauthfail("You are not logged in.", conninfo->sock);
+  return 0;
+}
+
+int sendauthfail(char *msg, int sock) {
+
   struct candlemsg *reply = alloccandlemsg();
-  reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, NULLFIELD,
-                        "You are not logged in.");
-  sendcandlemsg(reply, conninfo->sock);
+  reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, NULLFIELD, msg);
+  sendcandlemsg(reply, sock);
   dealloccandlemsg(reply);
 
   return 0;
 }
+
+int sendnewusid(char *msg, int sock) {
+
+  struct candlemsg *reply = alloccandlemsg();
+  reply = packcandlemsg(reply, NEWUSID, NULLFIELD, NULLFIELD, NULLFIELD, msg);
+  sendcandlemsg(reply, sock);
+  dealloccandlemsg(reply);
+
+  return 0;
+}
+
+char *makeusid(struct candlemsg *candlemsg) {
+
+  int usid = 0;
+
+  int i;
+  for(i = 0; *(candlemsg->from + i) != '\0'; i++) {
+    usid = (*(candlemsg->from + i) + usid);
+  }
+  for(i = 0; *(candlemsg->msg + i) != '\0'; i++) {
+    usid = (*(candlemsg->from + i) + usid);
+  }
+
+  usid = usid * time(NULL);
+
+  char *usidstr = malloc(sizeof(char) * USIDLEN);
+  sprintf(usidstr, "%d", usid);
+
+  printf("%s%s\n", "USID: ", usidstr);
+
+  return usidstr;
+  
+}
+
