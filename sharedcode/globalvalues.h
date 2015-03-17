@@ -7,6 +7,7 @@
 #define FROMLEN 32
 #define TOLEN 32
 #define MSGLEN 4096
+#define USIDLEN 256
 
 #define IPLEN 128
 
@@ -16,5 +17,7 @@
 #define LOCKOUT "lockout"
 #define LOGOUT "logout"
 #define MSG "msg"
+#define AUTHFAIL "authfail"
+#define NEWUSID "newusid"
 
 #endif
