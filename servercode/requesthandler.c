@@ -86,6 +86,16 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     return 0;
   }
   
+  if(strcmp(candlemsg->reqtype, BROADCAST) == 0) {
+   
+    /* Check user in. */
+    findusid(candlemsg->from, userlist)->lastcheckin = time(NULL);
+
+    char *buf = malloc(sizeof(char) * MSGLEN);
+    sprintf(buf, "%s%s%s", findusid(candlemsg->from, userlist)->username, ": ", candlemsg->msg);
+    broadcast(buf, userlist);
+  }
+
   if(strcmp(candlemsg->reqtype, LOGOUT) == 0) {
 
     char *username = malloc(sizeof(char) * FROMLEN);

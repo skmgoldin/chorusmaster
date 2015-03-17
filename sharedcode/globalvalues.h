@@ -20,4 +20,6 @@
 #define AUTHFAIL "authfail"
 #define NEWUSID "newusid"
 
+#define BROADCAST "broadcast"
+
 #endif

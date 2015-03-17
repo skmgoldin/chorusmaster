@@ -14,8 +14,6 @@
 #include <netdb.h>
 #include <sys/wait.h>
 
-//#define CANDLEPORT "4444" // I need to get an arbitrary port from the system.
-
 static char *servip;
 static char *servport;
 static char *username;
@@ -68,6 +66,7 @@ int main(int argc, char **argv) {
   char *mysock = malloc(sizeof(char) * IPLEN);   
   sprintf(mysock, "%d", servsock);
   free(servinfo);
+
   showrunner(servip, servport, mysock); 
   
   return 0;
@@ -80,7 +79,7 @@ int showrunner(char *servip, char *servport, char *mysock) {
 
   if(pid == 0) {
     /* Child process */
-    execl("./clientlistener", "./clientlistener", mysock, NULL); //Get an arbitrary port!
+    execl("./clientlistener", "./clientlistener", mysock, NULL);
   } else if(pid > 0) {
     /* Parent process */
     login(servip, servport);
@@ -101,11 +100,45 @@ int inputhandler(char *servip, char *servport) {
   char *input = malloc(sizeof(char) * MSGLEN);
 
   fgets(input, MSGLEN, stdin);
-  printf("%s\n", input);
 
+  int i;
+  for(i = 0; *(input + i) != ' '; i++) {;}
+  char *reqtype = malloc(sizeof(char) * (i + 1));
+  strncpy(reqtype, input, i);
+  *(reqtype + i) = '\0';
+
+  struct candlemsg *candlemsg = alloccandlemsg();
+  candlemsg = packcandlemsg(candlemsg, reqtype, listenport, usid, NULLFIELD, (input + (i + 1)));
+ 
+  struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
+
+
+
+  dealloccandlemsg(candlemsg);
+  dealloccandlemsg(reply);
+  free(reqtype);
   free(input);
 
   return 0;
+}
+
+char **parseinput(char *input) {
+  
+  char **cmds = malloc(sizeof(char *) * 3);
+
+  int i;
+  for(i = 0; *(input + i) != ' '; i++) {;}
+  *(cmds + 0) = malloc(sizeof(char) * (i + 1));
+  strncpy(*(cmds + 0), input, i);
+  *(*(cmds + 0) + i) = '\0';
+
+  if(strcmp(*(cmds), BROADCAST) == 0) {
+    *(cmds + 1) = malloc(sizeof(char) * MSGLEN);
+    strcpy(*(cmds + 1), (input + (i + 1)));
+    *(cmds + 2) = malloc(sizeof(char));
+  }
+
+  return cmds;
 }
 
 int login(char *servip, char *servport) {
