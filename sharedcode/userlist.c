@@ -5,14 +5,13 @@
 #include <time.h>
 #include <stdio.h>
 
-struct userlist *adduser(char *username, char *ip, char *port,
+struct userlist *adduser(char *username, char *usid, char *ip, char *port,
                          struct userlist *userlist) {
 
   struct usernode *newnode = malloc(sizeof(struct usernode));
-  newnode = initusernode(newnode, username, ip, port);
+  newnode = initusernode(newnode, username, usid, ip, port);
 
   if(userlist->head == NULL) {
-    printf("%s\n", "Adding user at list head.");
     userlist->head = newnode;
     return userlist;
   }
@@ -23,7 +22,6 @@ struct userlist *adduser(char *username, char *ip, char *port,
     currnode = currnode->next;
   }
 
-  printf("%s\n", "Adding user at list end.");
   currnode->next = newnode;
 
   return userlist;
@@ -32,6 +30,7 @@ struct userlist *adduser(char *username, char *ip, char *port,
 int deinitusernode(struct usernode *node) {
 
   free(node->username);
+  free(node->usid);
   free(node->ip);
   free(node->port);
   free(node);
@@ -39,12 +38,11 @@ int deinitusernode(struct usernode *node) {
   return 0;
 }
 
-struct userlist *rmvuser(char *username, struct userlist *userlist) {
+struct userlist *rmvusername(char *username, struct userlist *userlist) {
 
   struct usernode *currnode = userlist->head;
 
   if(strcmp(currnode->username, username) == 0) {
-    printf("%s\n", "user was first");
     userlist->head = currnode->next;
     deinitusernode(currnode);
 
@@ -54,7 +52,33 @@ struct userlist *rmvuser(char *username, struct userlist *userlist) {
   while(currnode->next != NULL) {
     if(strcmp(currnode->next->username, username) == 0) {
 
-      printf("%s\n", "user wasn't first");
+      struct usernode *newnext = currnode->next->next;
+      deinitusernode(currnode->next);
+      currnode->next = newnext;
+
+      return userlist;
+    }
+
+    currnode = currnode->next;
+  }
+
+  return userlist;
+}
+
+struct userlist *rmvusid(char *usid, struct userlist *userlist) {
+
+  struct usernode *currnode = userlist->head;
+
+  if(strcmp(currnode->usid, usid) == 0) {
+    userlist->head = currnode->next;
+    deinitusernode(currnode);
+
+    return userlist;
+  }
+
+  while(currnode->next != NULL) {
+    if(strcmp(currnode->next->usid, usid) == 0) {
+
       struct usernode *newnext = currnode->next->next;
       deinitusernode(currnode->next);
       currnode->next = newnext;
@@ -69,10 +93,13 @@ struct userlist *rmvuser(char *username, struct userlist *userlist) {
 }
 
 struct usernode *initusernode(struct usernode *newnode, char *username,
-                              char *ip, char *port) {
+                              char *usid, char *ip, char *port) {
 
   newnode->username = malloc(sizeof(char) * FROMLEN);
   strcpy(newnode->username, username);
+
+  newnode->usid = malloc(sizeof(char) * USIDLEN);
+  strcpy(newnode->usid, usid);
 
   newnode->ip = malloc(sizeof(char) * IPLEN);
   strcpy(newnode->ip, ip);
