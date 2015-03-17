@@ -102,7 +102,6 @@ int inputhandler(char *servip, char *servport) {
   fgets(input, MSGLEN, stdin);
   printf("%s\n", input);
 
-
   free(input);
 
   return 0;
