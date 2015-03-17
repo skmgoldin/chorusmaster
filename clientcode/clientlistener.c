@@ -4,6 +4,8 @@
 #include "../sharedcode/conninfo.h"
 #include "../sharedcode/candlemsg.h"
 #include <stdlib.h>
+#include "../sharedcode/globalvalues.h"
+#include <string.h>
 
 int main(int argc, char **argv) {
 
@@ -14,6 +16,11 @@ int main(int argc, char **argv) {
 
     struct candlemsg *candlemsg = readcandlemsg(conninfo->sock);
 
+    if(strcmp(candlemsg->reqtype, LOGOUT) == 0) {
+
+      printf("%s\n", candlemsg->msg);
+      exit(0);
+    }
     printf("%s\n", candlemsg->msg);
 
     deallocconninfo(conninfo);
