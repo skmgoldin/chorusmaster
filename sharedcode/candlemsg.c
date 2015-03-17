@@ -35,19 +35,19 @@ struct candlemsg *packcandlemsg(struct candlemsg *candlemsg, char *reqtype,
 
   strcpy(candlemsg->versionid, VERSIONID);
 
-  reqtype = validatemsg(reqtype, REQTYPELEN);
+  reqtype = validatemsg(reqtype);
   strcpy(candlemsg->reqtype, reqtype);
 
-  stableport = validatemsg(stableport, PORTLEN);
+  stableport = validatemsg(stableport);
   strcpy(candlemsg->stableport, stableport);
 
-  from = validatemsg(from, FROMLEN);
+  from = validatemsg(from);
   strcpy(candlemsg->from, from);
 
-  to = validatemsg(to, TOLEN);
+  to = validatemsg(to);
   strcpy(candlemsg->to, to);
 
-  msg = validatemsg(msg, MSGLEN);
+  msg = validatemsg(msg);
   strcpy(candlemsg->msg, msg);
 
   return candlemsg;
