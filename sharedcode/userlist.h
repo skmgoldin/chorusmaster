@@ -11,6 +11,7 @@ struct usernode {
   char *username;
   char *ip;
   char *port;
+  char *usid;
   time_t lastcheckin;
   int util;
   struct usernode *next;
