@@ -122,25 +122,6 @@ int inputhandler(char *servip, char *servport) {
   return 0;
 }
 
-char **parseinput(char *input) {
-  
-  char **cmds = malloc(sizeof(char *) * 3);
-
-  int i;
-  for(i = 0; *(input + i) != ' '; i++) {;}
-  *(cmds + 0) = malloc(sizeof(char) * (i + 1));
-  strncpy(*(cmds + 0), input, i);
-  *(*(cmds + 0) + i) = '\0';
-
-  if(strcmp(*(cmds), BROADCAST) == 0) {
-    *(cmds + 1) = malloc(sizeof(char) * MSGLEN);
-    strcpy(*(cmds + 1), (input + (i + 1)));
-    *(cmds + 2) = malloc(sizeof(char));
-  }
-
-  return cmds;
-}
-
 int login(char *servip, char *servport) {
 
   char *usernamebuf = malloc(sizeof(char) * FROMLEN);
