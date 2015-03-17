@@ -3,6 +3,7 @@
 #include <string.h>
 #include "globalvalues.h"
 #include <time.h>
+#include <stdio.h>
 
 struct userlist *adduser(char *username, char *ip, char *port,
                          struct userlist *userlist) {
@@ -11,6 +12,7 @@ struct userlist *adduser(char *username, char *ip, char *port,
   newnode = initusernode(newnode, username, ip, port);
 
   if(userlist->head == NULL) {
+    printf("%s\n", "Adding user at list head.");
     userlist->head = newnode;
     return userlist;
   }
@@ -21,6 +23,7 @@ struct userlist *adduser(char *username, char *ip, char *port,
     currnode = currnode->next;
   }
 
+  printf("%s\n", "Adding user at list end.");
   currnode->next = newnode;
 
   return userlist;
@@ -41,16 +44,17 @@ struct userlist *rmvuser(char *username, struct userlist *userlist) {
   struct usernode *currnode = userlist->head;
 
   if(strcmp(currnode->username, username) == 0) {
-    struct usernode *newhead = currnode->next;
+    printf("%s\n", "user was first");
+    userlist->head = currnode->next;
     deinitusernode(currnode);
-    userlist->head = newhead;
 
     return userlist;
   }
 
   while(currnode->next != NULL) {
-
     if(strcmp(currnode->next->username, username) == 0) {
+
+      printf("%s\n", "user wasn't first");
       struct usernode *newnext = currnode->next->next;
       deinitusernode(currnode->next);
       currnode->next = newnext;
