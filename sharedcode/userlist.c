@@ -124,7 +124,19 @@ int deinitallnodes(struct usernode *currnode) {
   return 0;
 }
 
-struct usernode *finduser(char *username, struct userlist *userlist) {
+struct usernode *findusid(char *usid, struct userlist *userlist) {
+
+  struct usernode *currnode = userlist->head;
+
+  while(currnode != NULL) {
+    if(strcmp(usid, currnode->usid) == 0) { return currnode; }
+    currnode = currnode->next;
+  }
+
+  return NULL; 
+}
+
+struct usernode *findusername(char *username, struct userlist *userlist) {
 
   struct usernode *currnode = userlist->head;
 

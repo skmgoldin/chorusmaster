@@ -33,6 +33,8 @@ int deinituserlist(struct userlist *userlist);
 
 int deinitallnodes(struct usernode *currnode);
 
-struct usernode *finduser(char *username, struct userlist *userlist);
+struct usernode *findusid(char *usid, struct userlist *userlist);
+
+struct usernode *findusername(char *username, struct userlist *userlist);
 
 #endif
