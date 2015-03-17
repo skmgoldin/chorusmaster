@@ -20,6 +20,7 @@ static char *servip;
 static char *servport;
 static char *username;
 static char *listenport;
+static char *usid;
 
 void siginthandler() {
   logout(servip, servport);
@@ -30,7 +31,7 @@ void siginthandler() {
 int logout(char *servip, char *servport) {
 
   struct candlemsg *candlemsg = alloccandlemsg();
-  candlemsg = packcandlemsg(candlemsg, LOGOUT, NULLFIELD, username, NULLFIELD, NULLFIELD);
+  candlemsg = packcandlemsg(candlemsg, LOGOUT, servport, usid, NULLFIELD, NULLFIELD);
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
   dealloccandlemsg(candlemsg);
   dealloccandlemsg(reply);
@@ -118,22 +119,26 @@ int login(char *servip, char *servport) {
   fgets(msg, MSGLEN, stdin);
 
   struct candlemsg *candlemsg = alloccandlemsg();
-  candlemsg = packcandlemsg(candlemsg, LOGIN, listenport, usernamebuf, NULLFIELD, msg); //Get an arbitrary port!
+  candlemsg = packcandlemsg(candlemsg, LOGIN, listenport, usernamebuf, NULLFIELD, msg);
   free(msg);
 
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
   dealloccandlemsg(candlemsg);
 
-  if(atoi(reply->msg) == 1) {
+  if(strcmp(reply->reqtype, NEWUSID) == 0) {
+    usid = malloc(sizeof(char) * USIDLEN);
+    strcpy(usid, reply->msg);
+
     username = malloc(sizeof(char) * FROMLEN);
     strcpy(username, usernamebuf);
     free(usernamebuf);
+
     dealloccandlemsg(reply);
-    return 0;
-  } else {
+
+  } else if(strcmp(reply->reqtype, AUTHFAIL) == 0) {
     printf("%s\n", reply->msg);
-    free(usernamebuf);
     dealloccandlemsg(reply);
+    free(usernamebuf);
     return login(servip, servport);
   }
 
