@@ -19,27 +19,21 @@
 int authenticate(struct candlemsg *candlemsg, struct userlist *userlist, 
                  struct userlist *loginlist, struct userlist *lockoutlist,
                  struct conninfo *conninfo) {
-  
-  if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
-    if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
-      return 1;
-    }
-    return 0;
-  }
 
   if(alreadyauthenticated(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
     return 1;
   }
-
+ 
   if(lockedout(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
     return 0;
   }
 
-  if(alreadyauthenticated(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
+  if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
     return 1;
   }
 
-
+  // Send AUTHFAIL
+  
   return 0;
 }
 
@@ -79,16 +73,10 @@ int alreadyauthenticated(struct candlemsg *candlemsg, struct userlist *userlist,
                          struct userlist *loginlist, struct userlist *lockoutlist,
                          struct conninfo *conninfo) {
 
-  struct usernode *user = finduser(candlemsg->from, userlist);
+  struct usernode *user = findusid(candlemsg->from, userlist);
+
   if(user != NULL) {
     /* User is already authenticated. */
-    if(strcmp(user->ip, conninfo->ip) != 0) {
-      /* User is logging in from a new location, re-authenticate. */
-      if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
-        return 1;
-      }
-    }
-    /* User is authenticated and logging in from familiar location. */
     return 1;
   }
 
@@ -100,24 +88,20 @@ int lockedout(struct candlemsg *candlemsg, struct userlist *userlist,
               struct userlist *loginlist, struct userlist *lockoutlist,
               struct conninfo *conninfo) { 
 
-  struct usernode *user = finduser(candlemsg->from, lockoutlist);
+  struct usernode *username = finduser(candlemsg->from, lockoutlist);
   if(user != NULL) {
     /* User is currently locked out. */
     if(difftime(time(NULL), user->lastcheckin) < LOCKOUTTIME) {
       struct candlemsg *reply = alloccandlemsg();
-      reply = packcandlemsg(reply, LOCKOUT, NULLFIELD, NULLFIELD, candlemsg->from,
-                            "You are locked out. Try again later.\n"); 
+      reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, candlemsg->from,
+                            "You are locked out. Try again later."); 
       sendcandlemsg(reply, conninfo->sock);
       dealloccandlemsg(reply);
       return 1;
     } else {
       /* Lockout period expired. */
       rmvuser(candlemsg->from, lockoutlist);
-      if(loginmanager(candlemsg, userlist, loginlist, lockoutlist, conninfo)) { 
-        return 0;
-      } else {
-        return 1;
-      }
+      return 0;
     }
   }
 
@@ -153,7 +137,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
       return 1;
     }
 
-    /* Login failed, request try again. */
+    /* Login failed. */
     if(finduser(candlemsg->from, loginlist) == NULL) {
       /* If user isn't on loginlist, add them and increment util. */
       adduser(candlemsg->from, conninfo->ip, candlemsg->stableport, loginlist);
@@ -169,7 +153,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
         rmvuser(candlemsg->from, loginlist);
 
         struct candlemsg *reply = alloccandlemsg();
-        reply = packcandlemsg(reply, LOCKOUT, NULLFIELD, NULLFIELD, candlemsg->from,
+        reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, candlemsg->from,
                               "You are locked out. Try again later."); 
         sendcandlemsg(reply, conninfo->sock);
         dealloccandlemsg(reply);
@@ -178,7 +162,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
     }
 
     struct candlemsg *reply = alloccandlemsg();
-    reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD,
+    reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, NULLFIELD,
                           "Incorrect username or password.");
     sendcandlemsg(reply, conninfo->sock);
     dealloccandlemsg(reply);
@@ -188,7 +172,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
 
   /* Non-login reqtype */
   struct candlemsg *reply = alloccandlemsg();
-  reply = packcandlemsg(reply, LOGIN, NULLFIELD, NULLFIELD, NULLFIELD,
+  reply = packcandlemsg(reply, AUTHFAIL, NULLFIELD, NULLFIELD, NULLFIELD,
                         "You are not logged in.");
   sendcandlemsg(reply, conninfo->sock);
   dealloccandlemsg(reply);
