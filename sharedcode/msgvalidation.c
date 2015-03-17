@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-char *validatemsg(char *msg, int maxlen) {
+char *validatemsg(char *msg) {
 
   int msglen = strlen(msg);
 
