@@ -12,6 +12,7 @@
 #include "../sharedcode/sockdata.h"
 #include <sys/socket.h>
 #include <netdb.h>
+#include <sys/wait.h>
 
 //#define CANDLEPORT "4444" // I need to get an arbitrary port from the system.
 
@@ -74,6 +75,7 @@ int main(int argc, char **argv) {
 int showrunner(char *servip, char *servport, char *mysock) {
 
   pid_t pid = fork();
+  int status;
 
   if(pid == 0) {
     /* Child process */
@@ -81,7 +83,12 @@ int showrunner(char *servip, char *servport, char *mysock) {
   } else if(pid > 0) {
     /* Parent process */
     login(servip, servport);
-    inputhandler(servip, servport);
+    while(1) {
+      if(waitpid(pid, &status , WNOHANG)) {
+        exit(0);
+      }
+      inputhandler(servip, servport);
+    }
   }
 
   // Kill the clientlistener and message the server to say bye
@@ -92,15 +99,13 @@ int inputhandler(char *servip, char *servport) {
 
   char *input = malloc(sizeof(char) * MSGLEN);
 
-  while(1) {
-    fgets(input, MSGLEN, stdin);
-    printf("%s\n", input);
+  fgets(input, MSGLEN, stdin);
+  printf("%s\n", input);
 
-    memset(input, '0', MSGLEN); // Probably unnecessary
-     
-  }
 
   free(input);
+
+  return 0;
 }
 
 int login(char *servip, char *servport) {
