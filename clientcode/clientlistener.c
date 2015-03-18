@@ -16,14 +16,11 @@ int main(int argc, char **argv) {
 
     struct candlemsg *candlemsg = readcandlemsg(conninfo->sock);
 
-    if(strcmp(candlemsg->reqtype, LOGOUT) == 0) {
-
+    if(strcmp(candlemsg->reqtype, REQFAIL) == 0) {
       printf("%s\n", candlemsg->msg);
-      exit(0);
     }
-    printf("%s\n", candlemsg->msg);
 
-    deallocconninfo(conninfo);
+    deallocconninfo(conninfo); // Connection closed here
     dealloccandlemsg(candlemsg);
   }
 
