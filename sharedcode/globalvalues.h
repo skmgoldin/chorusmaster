@@ -16,7 +16,6 @@
 #define NULLFIELD "NULL"
 #define LOCKOUT "lockout"
 #define LOGOUT "logout"
-#define MSG "msg"
 #define AUTHFAIL "authfail"
 #define NEWUSID "newusid"
 
