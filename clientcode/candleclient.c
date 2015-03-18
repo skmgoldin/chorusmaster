@@ -127,7 +127,7 @@ int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
     for(i = k; *(input + i) != ' ' && *(input + i) != '\n'; i++) {;}
     char *pvtuser = malloc(sizeof(char) * (FROMLEN));
     strncpy(pvtuser, input + k, i - k);
-    *(pvtuser + i) = '\0';
+    *(pvtuser + i - k) = '\0';
 
     struct usernode *user = findusername(pvtuser, pvtlist);
     if(user == NULL) {
