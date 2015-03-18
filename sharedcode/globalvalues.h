@@ -23,5 +23,6 @@
 #define MESSAGE "message"
 #define REQFAIL "reqfail"
 #define ONLINE "online"
+#define PING "ping"
 
 #endif
