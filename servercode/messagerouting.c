@@ -12,8 +12,13 @@ int broadcast(char *msg, struct userlist *to) {
 
   struct usernode *currnode = to->head;
   while(currnode != NULL) {
-    dealloccandlemsg(candleexchange(candlemsg, currnode->ip, currnode->port));
-    currnode = currnode->next;
+    struct candlemsg *reply;
+    reply = candleexchange(candlemsg, currnode->ip, currnode->port);
+    if(reply == NULL) {;}
+    else {
+      dealloccandlemsg(reply);
+      currnode = currnode->next;
+    }
   }
 
   free(msg);
