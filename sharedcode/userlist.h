@@ -2,6 +2,7 @@
 #define USERLIST_H
 
 #include <time.h>
+#include "candlemsg.h"
 
 struct userlist {
   struct usernode *head;
@@ -14,6 +15,7 @@ struct usernode {
   char *port;
   time_t lastcheckin;
   int util;
+  struct msgnode *msg;
   struct usernode *next;
 };
 
@@ -39,4 +41,5 @@ struct usernode *findusid(char *usid, struct userlist *userlist);
 
 struct usernode *findusername(char *username, struct userlist *userlist);
 
+char *usidtousername(char *usid, struct userlist *userlist);
 #endif

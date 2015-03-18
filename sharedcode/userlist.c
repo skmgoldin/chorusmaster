@@ -4,6 +4,7 @@
 #include "globalvalues.h"
 #include <time.h>
 #include <stdio.h>
+#include "msgnode.h"
 
 struct userlist *adduser(char *username, char *usid, char *ip, char *port,
                          struct userlist *userlist) {
@@ -111,6 +112,8 @@ struct usernode *initusernode(struct usernode *newnode, char *username,
   
   newnode->util = 0;
 
+  newnode->msg = NULL;
+
   newnode->next = NULL;
 
   return newnode;
@@ -174,3 +177,10 @@ struct usernode *findusername(char *username, struct userlist *userlist) {
 
   return NULL; 
 }
+
+char *usidtousername(char *usid, struct userlist *userlist) {
+
+  struct usernode *user = findusid(usid, userlist);
+  return user->username;
+}
+
