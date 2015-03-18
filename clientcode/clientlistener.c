@@ -25,7 +25,10 @@ int main(int argc, char **argv) {
     }
 
     if(strcmp(candlemsg->reqtype, PRIVATE) == 0) {
-      printf("%s%s%s%s\n", "P2P message from ", candlemsg->from, ": ", candlemsg->msg);
+      int i;
+      for(i = 0; *(candlemsg->msg + i) != ' ' && *(candlemsg->msg + i) != '\n'; i++) {;}
+
+      printf("%s%s%s%s\n", "P2P message from ", candlemsg->from, ": ", candlemsg->msg + i + 1);
     }
 
     if(strcmp(candlemsg->reqtype, PING) == 0) {
