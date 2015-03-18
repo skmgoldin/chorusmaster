@@ -53,7 +53,6 @@ int heartbeat(struct userlist *userlist) {
         sprintf(buf, "%s%s", killnode->username, " has not contacted the server and has been logged out.");
         rmvusername(killnode->username, userlist);
         broadcast(buf, userlist);
-        free(buf);
 
       } else {
         currnode->lastcheckin = time(NULL);
@@ -73,8 +72,7 @@ int ping(struct usernode *user) {
   struct candlemsg *reply = candleexchange(ping, user->ip, user->port);
   dealloccandlemsg(ping);
 
-  if(reply == NULL || strcmp(reply->reqtype, NULLFIELD) == 0) {
-    dealloccandlemsg(reply);
+  if(reply == NULL) {
     return 0;
   }
 

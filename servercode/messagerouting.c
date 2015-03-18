@@ -14,8 +14,9 @@ int broadcast(char *msg, struct userlist *to) {
   while(currnode != NULL) {
     struct candlemsg *reply;
     reply = candleexchange(candlemsg, currnode->ip, currnode->port);
-    if(reply == NULL) {;}
-    else {
+    if(reply == NULL) {
+      currnode = currnode->next;
+    } else {
       dealloccandlemsg(reply);
       currnode = currnode->next;
     }
