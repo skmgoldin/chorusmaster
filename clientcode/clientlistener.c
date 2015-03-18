@@ -25,7 +25,14 @@ int main(int argc, char **argv) {
     }
 
     if(strcmp(candlemsg->reqtype, MESSAGE) == 0) {
-      printf("%s\n", candlemsg->msg);
+
+      int i;                                                                      
+      for(i = 0; *(candlemsg->msg + i) != ' '; i++) {;}                           
+      char *to = malloc(sizeof(char) * (i + 1));                           
+      strncpy(to, candlemsg->msg, i);                                      
+      *(to + i) = '\0';
+
+      printf("%s%s%s%s%s\n", candlemsg->from, " (to ", to, "): ", candlemsg->msg + i + 1);
     }
 
     deallocconninfo(conninfo); // Connection closed here
