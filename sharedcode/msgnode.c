@@ -7,9 +7,6 @@
 
 int deliverpending(struct usernode *user, struct msglist *list) {
 
-  if(list->head == NULL) {
-    printf("%s\n", "No pending messages."); 
-  }
   struct msgnode *currnode;
   for(currnode = list->head; currnode != NULL; currnode = currnode->next) {
 
@@ -20,7 +17,6 @@ int deliverpending(struct usernode *user, struct msglist *list) {
     strncpy(deliverto, currnode->msg->msg, i);                                      
     *(deliverto + i) = '\0';     
 
-    printf("%s%s%s\n", "Match? ", user->username, deliverto); 
     if(strcmp(user->username, deliverto) == 0) {
       dealloccandlemsg(candleexchange(currnode->msg, user->ip, user->port));
     }
@@ -52,7 +48,6 @@ struct msgnode *addpendingmsg(struct msglist *list, struct candlemsg *msg) {
   msgnode->next = NULL;
 
   if(list->head == NULL) {
-    printf("%s\n", "NULL HEAD!!");
     list->head = msgnode;
     return list->head;
   }
