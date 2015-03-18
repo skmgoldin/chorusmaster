@@ -11,14 +11,18 @@
 #include "logger.h"
 #include <time.h>
 #include "../sharedcode/msgvalidation.h"
+#include "messagerouting.h"
 
 #define CREDFILE "servercode/credentials.txt"
 #define TRIES 3
 #define LOCKOUTTIME 60
+#define TIMEOUT 60
 
 int authenticate(struct candlemsg *candlemsg, struct userlist *userlist, 
                  struct userlist *loginlist, struct userlist *lockoutlist,
                  struct conninfo *conninfo) {
+
+  heartbeat(userlist);
 
   if(alreadyauthenticated(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
     return 1;
@@ -36,6 +40,47 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
 }
 
   
+int heartbeat(struct userlist *userlist) {
+  
+  struct usernode *currnode = userlist->head;
+  while(currnode != NULL) {
+    if(difftime(time(NULL), currnode->lastcheckin) > TIMEOUT) {
+      if(ping(currnode) == 0) {
+        struct usernode *killnode = currnode;
+        currnode = currnode->next;
+
+        char *buf = malloc(sizeof(char) * MSGLEN);
+        sprintf(buf, "%s%s", killnode->username, " has not contacted the server and has been logged out.");
+        rmvusername(killnode->username, userlist);
+        broadcast(buf, userlist);
+        free(buf);
+
+      } else {
+        currnode->lastcheckin = time(NULL);
+        currnode = currnode->next;
+      }
+    } else {
+      currnode = currnode->next;
+    }
+  } 
+  return 0;
+}
+
+int ping(struct usernode *user) {
+  struct candlemsg *ping = alloccandlemsg();
+  ping = packcandlemsg(ping, PING, NULLFIELD, NULLFIELD, NULLFIELD, NULLFIELD);
+
+  struct candlemsg *reply = candleexchange(ping, user->ip, user->port);
+  dealloccandlemsg(ping);
+
+  if(reply == NULL || strcmp(reply->reqtype, NULLFIELD) == 0) {
+    dealloccandlemsg(reply);
+    return 0;
+  }
+
+  dealloccandlemsg(reply);
+  return 1;
+}
 
 int login(char *username, char *password) {
 

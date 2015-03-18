@@ -24,6 +24,14 @@ int main(int argc, char **argv) {
       printf("%s%s\n", candlemsg->msg, " is online.");
     }
 
+    if(strcmp(candlemsg->reqtype, PING) == 0) {
+      printf("%s\n", "Checking in with server...");
+      struct candlemsg *rply = alloccandlemsg();
+      rply = packcandlemsg(rply, PING, NULLFIELD, NULLFIELD, NULLFIELD, NULLFIELD);
+      sendcandlemsg(rply, conninfo->sock);
+      dealloccandlemsg(rply);
+    }
+
     if(strcmp(candlemsg->reqtype, BROADCAST) == 0) {
       printf("%s\n", candlemsg->msg);
     }
