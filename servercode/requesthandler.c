@@ -92,6 +92,33 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     return 0;
   }
   
+  if(strcmp(candlemsg->reqtype, ONLINE) == 0) {
+ 
+    /* Check user in. */
+    findusid(candlemsg->from, userlist)->lastcheckin = time(NULL);
+
+    struct usernode *currnode = userlist->head;
+    while(currnode != NULL) {
+
+      char *buf = malloc(sizeof(char) * MSGLEN);
+      sprintf(buf, "%s", currnode->username);
+
+      struct candlemsg *message = alloccandlemsg();
+      message = packcandlemsg(message, ONLINE, NULLFIELD,
+                              NULLFIELD, NULLFIELD, buf);
+      dealloccandlemsg(candleexchange(message, findusid(candlemsg->from, userlist)->ip,
+                                      findusid(candlemsg->from, userlist)->port));
+      dealloccandlemsg(message);
+
+      free(buf);
+
+      currnode = currnode->next;
+
+    }
+
+    return 0;
+  }
+
   if(strcmp(candlemsg->reqtype, BROADCAST) == 0) {
    
     /* Check user in. */
