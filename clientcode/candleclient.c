@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <sys/wait.h>
+#include "../sharedcode/userlist.h"
 
 static char *servip;
 static char *servport;
@@ -51,6 +52,9 @@ int main(int argc, char **argv) {
   servip = *(argv + 1);
   servport = *(argv + 2);
 
+  struct userlist *pvtlist = malloc(sizeof(struct userlist));
+  pvtlist = inituserlist(pvtlist);
+
   int servsock = makeserver("0");
 
   struct sockaddr *servinfo = malloc(sizeof(struct sockaddr));
@@ -69,12 +73,12 @@ int main(int argc, char **argv) {
   sprintf(mysock, "%d", servsock);
   free(servinfo);
 
-  showrunner(servip, servport, mysock); 
+  showrunner(servip, servport, mysock, pvtlist); 
   
   return 0;
 }
 
-int showrunner(char *servip, char *servport, char *mysock) {
+int showrunner(char *servip, char *servport, char *mysock, struct userlist *pvtlist) {
 
   pid = fork();
   int status;
@@ -89,7 +93,7 @@ int showrunner(char *servip, char *servport, char *mysock) {
       if(waitpid(pid, &status , WNOHANG)) {
         exit(0);
       }
-      inputhandler(servip, servport);
+      inputhandler(servip, servport, pvtlist);
     }
   }
 
@@ -97,7 +101,7 @@ int showrunner(char *servip, char *servport, char *mysock) {
   return 0;
 }
 
-int inputhandler(char *servip, char *servport) {
+int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
 
   char *input = malloc(sizeof(char) * MSGLEN);
 
@@ -109,6 +113,8 @@ int inputhandler(char *servip, char *servport) {
   strncpy(reqtype, input, i);
   *(reqtype + i) = '\0';
 
+  int k = i + 1; // K is the begining of the second word in the input
+
   if(strcmp(reqtype, LOGOUT) == 0) {
     logout(servip, servport);
     free(reqtype);
@@ -116,11 +122,40 @@ int inputhandler(char *servip, char *servport) {
     exit(0);
   }
 
+  if(strcmp(reqtype, PRIVATE) == 0) {
+    /* Get username */
+    for(i = k; *(input + i) != ' ' && *(input + i) != '\n'; i++) {;}
+    char *pvtuser = malloc(sizeof(char) * (FROMLEN));
+    strncpy(pvtuser, input + k, i - k);
+    *(pvtuser + i) = '\0';
+
+    struct usernode *user = findusername(pvtuser, pvtlist);
+    if(user == NULL) {
+      printf("%s\n", "You don't have that user's contact information.");
+      return 0;
+    }
+
+    struct candlemsg *candlemsg = alloccandlemsg();
+    candlemsg = packcandlemsg(candlemsg, reqtype, listenport, username, NULLFIELD, (input + k));
+   
+    struct candlemsg *reply = candleexchange(candlemsg, user->ip, user->port);
+   
+    dealloccandlemsg(reply);
+    dealloccandlemsg(candlemsg);
+    free(reqtype);
+    free(pvtuser);
+    free(input);
+    return 0;
+  }
+
   struct candlemsg *candlemsg = alloccandlemsg();
-  candlemsg = packcandlemsg(candlemsg, reqtype, listenport, usid, NULLFIELD, (input + (i + 1)));
+  candlemsg = packcandlemsg(candlemsg, reqtype, listenport, usid, NULLFIELD, (input + k));
  
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
 
+  if(strcmp(reply->reqtype, GETADDRESS) == 0) {
+    adduser(reply->to, NULLFIELD, reply->msg, reply->stableport, pvtlist);
+  }
 
   dealloccandlemsg(candlemsg);
   dealloccandlemsg(reply);
