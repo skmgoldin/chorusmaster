@@ -140,6 +140,7 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     }
 
     dealloccandlemsg(candleexchange(message, delivernode->ip, delivernode->port));
+    dealloccandlemsg(candleexchange(message, findusid(candlemsg->from, userlist)->ip, findusid(candlemsg->from, userlist)->port));
     dealloccandlemsg(message);
 
     free(deliverto);
