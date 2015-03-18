@@ -92,6 +92,22 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     return 0;
   }
   
+  if(strcmp(candlemsg->reqtype, GETADDRESS) == 0) {
+ 
+    /* Check user in. */
+    findusid(candlemsg->from, userlist)->lastcheckin = time(NULL);
+
+    struct usernode *user = findusername(candlemsg->msg, userlist);
+
+    struct candlemsg *reply = alloccandlemsg();
+    reply = packcandlemsg(reply, GETADDRESS, user->port, NULLFIELD, user->username, user->ip); //Hacky, unintended use of struct fields.
+    sendcandlemsg(reply, conninfo->sock);
+
+    dealloccandlemsg(reply);
+
+    return 0;
+  }
+ 
   if(strcmp(candlemsg->reqtype, ONLINE) == 0) {
  
     /* Check user in. */
