@@ -109,11 +109,17 @@ int inputhandler(char *servip, char *servport) {
   strncpy(reqtype, input, i);
   *(reqtype + i) = '\0';
 
+  if(strcmp(reqtype, LOGOUT) == 0) {
+    logout(servip, servport);
+    free(reqtype);
+    free(input);
+    exit(0);
+  }
+
   struct candlemsg *candlemsg = alloccandlemsg();
   candlemsg = packcandlemsg(candlemsg, reqtype, listenport, usid, NULLFIELD, (input + (i + 1)));
  
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
-
 
 
   dealloccandlemsg(candlemsg);
