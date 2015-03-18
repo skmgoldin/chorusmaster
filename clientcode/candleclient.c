@@ -19,7 +19,8 @@ static char *servport;
 static char *username;
 static char *listenport;
 static char *usid;
-
+static pid_t pid;
+  
 void siginthandler() {
   logout(servip, servport);
   free(username);
@@ -33,6 +34,7 @@ int logout(char *servip, char *servport) {
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
   dealloccandlemsg(candlemsg);
   dealloccandlemsg(reply);
+  kill(pid, SIGINT);
   return 0;
 }
 
@@ -74,7 +76,7 @@ int main(int argc, char **argv) {
 
 int showrunner(char *servip, char *servport, char *mysock) {
 
-  pid_t pid = fork();
+  pid = fork();
   int status;
 
   if(pid == 0) {
