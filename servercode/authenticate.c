@@ -32,8 +32,6 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
     return 1;
   }
 
-  sendauthfail("Authentication failed.", conninfo->sock);
-  
   return 0;
 }
 
@@ -148,6 +146,7 @@ int loginmanager(struct candlemsg *candlemsg, struct userlist *userlist,
         return 0;
       }
     }
+
 
     sendauthfail("Incorrect username or password", conninfo->sock);
     return 0;
