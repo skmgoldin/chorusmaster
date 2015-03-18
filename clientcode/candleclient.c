@@ -102,7 +102,7 @@ int inputhandler(char *servip, char *servport) {
   fgets(input, MSGLEN, stdin);
 
   int i;
-  for(i = 0; *(input + i) != ' '; i++) {;}
+  for(i = 0; *(input + i) != ' ' && *(input + i) != '\n'; i++) {;}
   char *reqtype = malloc(sizeof(char) * (i + 1));
   strncpy(reqtype, input, i);
   *(reqtype + i) = '\0';
