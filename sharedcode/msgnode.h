@@ -19,4 +19,6 @@ struct msgnode *addpendingmsg(struct msglist *list, struct candlemsg *msg);
 
 int deliverpending(struct usernode *user, struct msglist *list);
 
+struct msgnode *deliverpendinghelper(struct usernode *user, struct msgnode *currnode);
+
 #endif
