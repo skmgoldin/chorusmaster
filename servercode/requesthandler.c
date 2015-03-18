@@ -17,6 +17,7 @@
 #include <signal.h>
 #include <time.h>
 #include "messagerouting.h"
+#include "../sharedcode/msgnode.h"
 
 static int run = 1;
 
@@ -46,6 +47,9 @@ int main(int argc, char **argv) {
   struct userlist *lockoutlist = malloc(sizeof(struct userlist));
   lockoutlist = inituserlist(lockoutlist);
 
+  struct msglist *pending = malloc(sizeof(struct msglist));
+  pending->head = NULL;
+
   while(run) {
 
     struct conninfo *conninfo = getconnection(sock); 
@@ -56,7 +60,7 @@ int main(int argc, char **argv) {
 
     if(authenticate(candlemsg, userlist, loginlist, lockoutlist, conninfo)) {
       serverlog("User authenticated");
-      handlerequest(candlemsg, userlist, conninfo);
+      handlerequest(candlemsg, userlist, conninfo, pending);
     } else {
       serverlog("User authentication failed");
     }
@@ -71,13 +75,15 @@ int main(int argc, char **argv) {
 }
 
 int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
-                  struct conninfo *conninfo) {
+                  struct conninfo *conninfo, struct msglist *pending) {
 
 
   if(strcmp(candlemsg->reqtype, LOGIN) == 0) {
 
     /* Check user in. */
     findusername(candlemsg->from, userlist)->lastcheckin = time(NULL);
+
+    deliverpending(findusername(candlemsg->from, userlist), pending);
 
     char *buf = malloc(sizeof(char) * MSGLEN);
     sprintf(buf, "%s%s", candlemsg->from, " logged in!");
@@ -110,33 +116,32 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     strncpy(deliverto, candlemsg->msg, i);                                                   
     *(deliverto + i) = '\0'; 
 
+    /* Prepare message */
+    struct candlemsg *message = alloccandlemsg();
+    message = packcandlemsg(message, MESSAGE, NULLFIELD, usidtousername(candlemsg->from, userlist), NULLFIELD, candlemsg->msg);
+
     struct usernode *delivernode = findusername(deliverto, userlist);
     if(delivernode == NULL) {
       /* Intended recipient is not logged in. */
 
+      addpendingmsg(pending, message);
+
       char *buf = malloc(sizeof(char) * MSGLEN);
       sprintf(buf, "%s%s", deliverto, " is not online. Your message will be delivered when they log on next.");
 
-      struct candlemsg *message = alloccandlemsg();
-      message = packcandlemsg(message, REQFAIL, NULLFIELD, NULLFIELD, NULLFIELD, buf);
-      dealloccandlemsg(candleexchange(message, findusid(candlemsg->from, userlist)->ip, findusid(candlemsg->from, userlist)->port)); 
+      struct candlemsg *reply = alloccandlemsg();
+      reply = packcandlemsg(reply, REQFAIL, NULLFIELD, NULLFIELD, NULLFIELD, buf);
+      dealloccandlemsg(candleexchange(reply, findusid(candlemsg->from, userlist)->ip, findusid(candlemsg->from, userlist)->port)); 
 
-      dealloccandlemsg(message);
+      dealloccandlemsg(reply);
       free(buf);
       free(deliverto);
       return 0;
     }
 
-    char *buf = malloc(sizeof(char) * MSGLEN);
-    sprintf(buf, "%s%s%s%s%s", findusid(candlemsg->from, userlist)->username, " (to  ", delivernode->username, "): ", candlemsg->msg + i + 1);
-
-    struct candlemsg *message = alloccandlemsg();
-    message = packcandlemsg(message, NULLFIELD, NULLFIELD, NULLFIELD, NULLFIELD, buf);
-    
     dealloccandlemsg(candleexchange(message, delivernode->ip, delivernode->port));
     dealloccandlemsg(message);
 
-    free(buf);
     free(deliverto);
     return 0;
   }
