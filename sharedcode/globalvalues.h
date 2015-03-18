@@ -22,5 +22,6 @@
 #define BROADCAST "broadcast"
 #define MESSAGE "message"
 #define REQFAIL "reqfail"
+#define ONLINE "online"
 
 #endif
