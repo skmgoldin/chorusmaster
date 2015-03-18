@@ -166,7 +166,25 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
       return 0;
     }
 
-    dealloccandlemsg(candleexchange(message, delivernode->ip, delivernode->port));
+    struct candlemsg *rply;
+    if((rply = candleexchange(message, delivernode->ip, delivernode->port)) == NULL) {
+      /* Recipient is away unexpectedly */
+      addpendingmsg(pending, message);
+
+      char *buf = malloc(sizeof(char) * MSGLEN);
+      sprintf(buf, "%s%s", deliverto, " is not online. Your message will be delivered when they log on next.");
+
+      struct candlemsg *reply = alloccandlemsg();
+      reply = packcandlemsg(reply, REQFAIL, NULLFIELD, NULLFIELD, NULLFIELD, buf);
+      dealloccandlemsg(candleexchange(reply, findusid(candlemsg->from, userlist)->ip, findusid(candlemsg->from, userlist)->port)); 
+
+      dealloccandlemsg(reply);
+      free(buf);
+      free(deliverto);
+      return 0;
+    }
+
+    dealloccandlemsg(rply);
     dealloccandlemsg(candleexchange(message, findusid(candlemsg->from, userlist)->ip, findusid(candlemsg->from, userlist)->port));
     dealloccandlemsg(message);
 
