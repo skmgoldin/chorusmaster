@@ -8,7 +8,7 @@
 int broadcast(char *msg, struct userlist *to) {
 
   struct candlemsg *candlemsg = alloccandlemsg();
-  candlemsg = packcandlemsg(candlemsg, MSG, NULLFIELD, NULLFIELD, NULLFIELD, msg);
+  candlemsg = packcandlemsg(candlemsg, BROADCAST, NULLFIELD, NULLFIELD, NULLFIELD, msg);
 
   struct usernode *currnode = to->head;
   while(currnode != NULL) {
