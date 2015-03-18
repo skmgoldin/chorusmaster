@@ -24,5 +24,7 @@
 #define REQFAIL "reqfail"
 #define ONLINE "online"
 #define PING "ping"
+#define GETADDRESS "getaddress"
+#define PRIVATE "private"
 
 #endif
