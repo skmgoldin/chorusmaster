@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
       serverlog("User authentication failed");
     }
 
-    deallocconninfo(conninfo);
+    deallocconninfo(conninfo); // Connection is closed here.
     dealloccandlemsg(candlemsg);
   }
 
@@ -103,6 +103,7 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     /* Check user in. */
     findusid(candlemsg->from, userlist)->lastcheckin = time(NULL);
 
+    /* Tokenize first word in message (the recipient). */
     int i;                                                                        
     for(i = 0; *(candlemsg->msg + i) != ' '; i++) {;}                                      
     char *deliverto = malloc(sizeof(char) * (i + 1));                               
@@ -110,6 +111,21 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     *(deliverto + i) = '\0'; 
 
     struct usernode *delivernode = findusername(deliverto, userlist);
+    if(delivernode == NULL) {
+      /* Intended recipient is not logged in. */
+
+      char *buf = malloc(sizeof(char) * MSGLEN);
+      sprintf(buf, "%s%s", deliverto, " is not online. Your message will be delivered when they log on next.");
+
+      struct candlemsg *message = alloccandlemsg();
+      message = packcandlemsg(message, REQFAIL, NULLFIELD, NULLFIELD, NULLFIELD, buf);
+      dealloccandlemsg(candleexchange(message, findusid(candlemsg->from, userlist)->ip, findusid(candlemsg->from, userlist)->port)); 
+
+      dealloccandlemsg(message);
+      free(buf);
+      free(deliverto);
+      return 0;
+    }
 
     char *buf = malloc(sizeof(char) * MSGLEN);
     sprintf(buf, "%s%s%s%s%s", findusid(candlemsg->from, userlist)->username, " (to  ", delivernode->username, "): ", candlemsg->msg + i + 1);
