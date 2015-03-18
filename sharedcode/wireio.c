@@ -71,7 +71,7 @@ int makeconnection(char *ip, char *port) {
   if(connect(sockdata->sock, sockdata->servinfo->ai_addr,
              sockdata->servinfo->ai_addrlen) != 0) {
     fprintf(stderr, "%s\n", "connect failed.");
-    exit(1);
+    return 0;
   }
 
   int sock = sockdata->sock;
@@ -103,6 +103,7 @@ struct candlemsg *candleexchange(struct candlemsg *candlemsg, char *ip,
                                  char *port) {
 
   int sock = makeconnection(ip, port);
+  if(sock == 0) {return NULL;}
 
   sendcandlemsg(candlemsg, sock);
 
