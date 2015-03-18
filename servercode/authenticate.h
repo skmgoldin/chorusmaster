@@ -7,6 +7,10 @@ int authenticate(struct candlemsg *candlemsg, struct userlist *userlist,
                  struct userlist *loginlist, struct userlist *lockoutlist,
                  struct conninfo *conninfo);
 
+int heartbeat(struct userlist *userlist);
+  
+int ping(struct usernode *user);
+
 int login(char *username, char *password);
 
 int alreadyauthenticated(struct candlemsg *candlemsg, struct userlist *userlist, 
