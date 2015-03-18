@@ -224,6 +224,8 @@ int sendnewusid(char *msg, int sock) {
 
 char *makeusid(struct candlemsg *candlemsg) {
 
+  srand(time(NULL));
+
   int usid = 0;
 
   int i;
@@ -234,12 +236,11 @@ char *makeusid(struct candlemsg *candlemsg) {
     usid = (*(candlemsg->from + i) + usid);
   }
 
-  usid = usid * time(NULL);
+  //usid = usid * time(NULL);
+  usid = usid * (rand() % 100000);
 
   char *usidstr = malloc(sizeof(char) * USIDLEN);
   sprintf(usidstr, "%d", usid);
-
-  printf("%s%s\n", "USID: ", usidstr);
 
   return usidstr;
   
