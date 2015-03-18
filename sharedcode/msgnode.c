@@ -59,7 +59,7 @@ struct msgnode *addpendingmsg(struct msglist *list, struct candlemsg *msg) {
 
   struct msgnode *currnode = list->head;
   while(currnode->next != NULL) {
-    msgnode = msgnode->next;
+    currnode = currnode->next;
   }
 
   currnode->next = msgnode;
