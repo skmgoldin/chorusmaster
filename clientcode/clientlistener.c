@@ -20,6 +20,10 @@ int main(int argc, char **argv) {
       printf("%s\n", candlemsg->msg);
     }
 
+    if(strcmp(candlemsg->reqtype, ONLINE) == 0) {
+      printf("%s%s\n", candlemsg->msg, " is online.");
+    }
+
     if(strcmp(candlemsg->reqtype, BROADCAST) == 0) {
       printf("%s\n", candlemsg->msg);
     }
