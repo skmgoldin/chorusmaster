@@ -20,6 +20,14 @@ int main(int argc, char **argv) {
       printf("%s\n", candlemsg->msg);
     }
 
+    if(strcmp(candlemsg->reqtype, BROADCAST) == 0) {
+      printf("%s\n", candlemsg->msg);
+    }
+
+    if(strcmp(candlemsg->reqtype, MESSAGE) == 0) {
+      printf("%s\n", candlemsg->msg);
+    }
+
     deallocconninfo(conninfo); // Connection closed here
     dealloccandlemsg(candlemsg);
   }
