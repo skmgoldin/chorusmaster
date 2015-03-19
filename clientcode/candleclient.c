@@ -139,6 +139,14 @@ int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
     candlemsg = packcandlemsg(candlemsg, reqtype, listenport, username, NULLFIELD, (input + k));
    
     struct candlemsg *reply = candleexchange(candlemsg, user->ip, user->port);
+    if(reply == NULL) {
+      printf("%s\n", "That user is not online. Try the 'message' command to send a message they'll receive when they come back online. It will be stored on the server though! Watch out for NSA goons!");
+      dealloccandlemsg(candlemsg);
+      free(reqtype);
+      free(pvtuser);
+      free(input);
+      return 0;
+    }
    
     dealloccandlemsg(reply);
     dealloccandlemsg(candlemsg);
