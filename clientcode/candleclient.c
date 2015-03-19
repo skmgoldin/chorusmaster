@@ -55,8 +55,10 @@ int main(int argc, char **argv) {
   struct userlist *pvtlist = malloc(sizeof(struct userlist));
   pvtlist = inituserlist(pvtlist);
 
+  /* Get a socket to any open port. */
   int servsock = makeserver("0");
 
+  /* Get info about our socket, like the port number. */
   struct sockaddr *servinfo = malloc(sizeof(struct sockaddr));
   socklen_t addrlen = sizeof(struct sockaddr);
   memset(servinfo, '0', sizeof(struct sockaddr));
@@ -73,6 +75,7 @@ int main(int argc, char **argv) {
   sprintf(mysock, "%d", servsock);
   free(servinfo);
 
+  /* Main loop */
   showrunner(servip, servport, mysock, pvtlist); 
   
   return 0;
@@ -97,7 +100,6 @@ int showrunner(char *servip, char *servport, char *mysock, struct userlist *pvtl
     }
   }
 
-  // Kill the clientlistener and message the server to say bye
   return 0;
 }
 
@@ -107,6 +109,7 @@ int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
 
   fgets(input, MSGLEN, stdin);
 
+  /* Tokenize first word */
   int i;
   for(i = 0; *(input + i) != ' ' && *(input + i) != '\n'; i++) {;}
   char *reqtype = malloc(sizeof(char) * (i + 1));
@@ -123,7 +126,7 @@ int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
   }
 
   if(strcmp(reqtype, PRIVATE) == 0) {
-    /* Get username */
+    /* Tokenize username from input */
     for(i = k; *(input + i) != ' ' && *(input + i) != '\n'; i++) {;}
     char *pvtuser = malloc(sizeof(char) * (FROMLEN));
     strncpy(pvtuser, input + k, i - k);
@@ -156,12 +159,13 @@ int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
     return 0;
   }
 
+  /* Pack and send message to server. */
   struct candlemsg *candlemsg = alloccandlemsg();
   candlemsg = packcandlemsg(candlemsg, reqtype, listenport, usid, NULLFIELD, (input + k));
- 
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
 
   if(strcmp(reply->reqtype, REQFAIL) == 0) {
+    /* Something went wrong. Print the server's response, if any. */
     printf("%s\n", reply->msg);
 
     dealloccandlemsg(candlemsg);
@@ -173,6 +177,7 @@ int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
   }
 
   if(strcmp(reply->reqtype, GETADDRESS) == 0) {
+    /* Response to a getaddress request, add the user to the pvtlist. */
     adduser(reply->to, NULLFIELD, reply->msg, reply->stableport, pvtlist);
   }
 
@@ -180,7 +185,6 @@ int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
   dealloccandlemsg(reply);
   free(reqtype);
   free(input);
-
   return 0;
 }
 
@@ -189,19 +193,21 @@ int login(char *servip, char *servport) {
   char *usernamebuf = malloc(sizeof(char) * FROMLEN);
   char *msg = malloc(sizeof(char) * MSGLEN);
 
+  /* Get user input. */
   printf("%s", "Username: ");
   fgets(usernamebuf, FROMLEN, stdin);
   printf("%s", "Password: ");
   fgets(msg, MSGLEN, stdin);
 
+  /* Pack and send login request to server */
   struct candlemsg *candlemsg = alloccandlemsg();
   candlemsg = packcandlemsg(candlemsg, LOGIN, listenport, usernamebuf, NULLFIELD, msg);
   free(msg);
-
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
   dealloccandlemsg(candlemsg);
 
   if(strcmp(reply->reqtype, NEWUSID) == 0) {
+    /* Login was successful, USID assigned. */
     usid = malloc(sizeof(char) * USIDLEN);
     strcpy(usid, reply->msg);
 
@@ -212,6 +218,7 @@ int login(char *servip, char *servport) {
     dealloccandlemsg(reply);
 
   } else if(strcmp(reply->reqtype, AUTHFAIL) == 0) {
+    /* Login unsuccessful. Print server instructions, if any. */
     printf("%s\n", reply->msg);
     dealloccandlemsg(reply);
     free(usernamebuf);
