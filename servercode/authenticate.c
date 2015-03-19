@@ -82,7 +82,7 @@ int ping(struct usernode *user) {
 
 int login(char *username, char *password) {
 
-FILE *credfile = fopen(CREDFILE, "r");
+  FILE *credfile = fopen(CREDFILE, "r");
   if(!credfile) {
     perror("File opening failed");
     exit(1);
@@ -91,16 +91,29 @@ FILE *credfile = fopen(CREDFILE, "r");
   char *teststring = malloc(sizeof(char) * MSGLEN);
   int i;
   for(i = 0; fgets(teststring, FROMLEN, credfile) != NULL; i++) {
-    teststring = validatemsg(teststring);
-    if(strcmp(username, teststring) == 0 && (i % 2) == 0) {
-      fgets(teststring, MSGLEN, credfile);
-      teststring = validatemsg(teststring);
-      if(strcmp(password, teststring) == 0) {
+    int k;
+    for(k = 0; *(teststring + k) != ' ' && *(teststring + k) != '\n'; k++) {;}              
+    char *testuser = malloc(sizeof(char) * MSGLEN);
+    strncpy(testuser, teststring, k);
+    *(testuser + k) = '\0';                                                        
+    testuser = validatemsg(testuser);
+    if(strcmp(username, testuser) == 0) {
+      int d = k + 1; // Beginning of second word.
+      for(k = d; *(teststring + k) != ' ' && *(teststring + k) != '\n'; k++) {;}              
+      char *testpw = malloc(sizeof(char) * MSGLEN);
+      strncpy(testpw, teststring + d, k - d);
+      *(testpw + k) = '\0';                                                        
+      testpw = validatemsg(testpw);
+      if(strcmp(password, testpw) == 0) {
         free(teststring);
+        free(testuser);
+        free(testpw);
         fclose(credfile);
         return 1;
       }
+      free(testpw);
     }
+    free(testuser);
   }
   
   rewind(credfile);
