@@ -106,7 +106,6 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
       dealloccandlemsg(reply);
 
       return 0;
-
     }
 
     struct candlemsg *reply = alloccandlemsg();
