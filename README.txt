@@ -3,7 +3,7 @@ Candlechat implements the following features specified by the assignment:
 User authentication
 Message exchange
 Multiple client support
-Heartbeat (partial)
+Heartbeat (alternative)
 Offline messaging
 Broadcasts
 Display current users
