@@ -1,5 +1,5 @@
 #ifndef MSGVALIDATION_H
-#define MSGVALIFATION_H
+#define MSGVALIDATION_H
 
 char *validatemsg(char *msg);
 
