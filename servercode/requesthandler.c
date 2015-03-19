@@ -98,6 +98,16 @@ int handlerequest(struct candlemsg *candlemsg, struct userlist *userlist,
     findusid(candlemsg->from, userlist)->lastcheckin = time(NULL);
 
     struct usernode *user = findusername(candlemsg->msg, userlist);
+    if(user == NULL) {
+      struct candlemsg *reply = alloccandlemsg();
+      reply = packcandlemsg(reply, REQFAIL, NULLFIELD, NULLFIELD, NULLFIELD, "That user is not online.");
+      sendcandlemsg(reply, conninfo->sock);
+
+      dealloccandlemsg(reply);
+
+      return 0;
+
+    }
 
     struct candlemsg *reply = alloccandlemsg();
     reply = packcandlemsg(reply, GETADDRESS, user->port, NULLFIELD, user->username, user->ip); //Hacky, unintended use of struct fields.
