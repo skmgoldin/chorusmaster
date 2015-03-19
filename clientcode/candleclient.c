@@ -161,6 +161,17 @@ int inputhandler(char *servip, char *servport, struct userlist *pvtlist) {
  
   struct candlemsg *reply = candleexchange(candlemsg, servip, servport);
 
+  if(strcmp(reply->reqtype, REQFAIL) == 0) {
+    printf("%s\n", reply->msg);
+
+    dealloccandlemsg(candlemsg);
+    dealloccandlemsg(reply);
+    free(reqtype);
+    free(input);
+
+    return 0;
+  }
+
   if(strcmp(reply->reqtype, GETADDRESS) == 0) {
     adduser(reply->to, NULLFIELD, reply->msg, reply->stableport, pvtlist);
   }
