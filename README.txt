@@ -1,13 +1,11 @@
 To Run:
 --------------------
-Terminal 1:
+Server:
 $make
 $./server <port>
 
-Terminal 2:
+Clients:
 $./client <serverip> <serverport>
-
-(serverip is probably 127.0.0.1 if both client and server on the same machine).
 
 Features:
 --------------------
